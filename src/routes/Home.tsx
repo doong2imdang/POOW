@@ -1,5 +1,10 @@
 import React from "react";
+import SchedulePost from "../components/SchedulePost";
 
 export default function Home() {
-  return <div>Home</div>;
+	return (
+		<div>
+			<SchedulePost />
+		</div>
+	);
 }

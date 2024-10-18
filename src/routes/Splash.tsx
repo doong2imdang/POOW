@@ -39,8 +39,8 @@ const Container = styled.div`
 	position: relative;
 `;
 
-export default function Splash() {
-	const [showSymbol, setShowSymbol] = useState(false);
+const Splash: React.FC = () => {
+	const [showSymbol, setShowSymbol] = useState<boolean>(false);
 
 	useEffect(() => {
 		const timer = setTimeout(() => {
@@ -60,4 +60,6 @@ export default function Splash() {
 			/>
 		</Container>
 	);
-}
+};
+
+export default Splash;
