@@ -7,6 +7,7 @@ import iconMoreVertical from "../assets/images/icon-more-vertical.svg";
 import iconBack from "../assets/images/icon-back.svg";
 import iconNext from "../assets/images/icon-next.svg";
 import Button from "./Button";
+import { useNavigate } from "react-router-dom";
 
 interface HeaderProps {
   main?: boolean;
@@ -25,6 +26,7 @@ const Header: React.FC<HeaderProps> = ({
   buttonDisabled,
   hasInput,
 }) => {
+  const navigate = useNavigate();
   return (
     <HeaderStyle>
       {main && (
@@ -32,7 +34,7 @@ const Header: React.FC<HeaderProps> = ({
           <button type="button">
             <img src={logoTxt} alt="Logo" />
           </button>
-          <button type="button">
+          <button type="button" onClick={() => navigate("/search")}>
             <img src={iconSearch} alt="Search" />
           </button>
         </>
