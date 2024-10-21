@@ -1,10 +1,10 @@
 import React from "react";
-import SchedulePost from "../components/SchedulePost";
+import Header from "../components/Header";
 
 export default function Home() {
 	return (
-		<div>
-			<SchedulePost />
-		</div>
+		<>
+			<Header main />
+		</>
 	);
 }
