@@ -20,6 +20,8 @@ const NavbarStyle = styled.nav`
 	font-size: 10px;
 	position: fixed;
 	bottom: 0;
+	background-color: #fff;
+	/* border: 1px solid black; */
 `;
 
 interface NavItemProps {
