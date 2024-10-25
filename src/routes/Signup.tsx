@@ -14,19 +14,35 @@ export default function Signup() {
   const [username, setUsername] = useState<string>("");
   const [accountID, setAccountID] = useState<string>("");
   const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [emailError, setEmailError] = useState<string>("");
+  const [passwordError, setPasswordError] = useState<string>("");
+  const [usernameError, setUsernameError] = useState<string>("");
+  const [accountIDError, setAccountIDError] = useState<string>("");
 
   useEffect(() => {
     if (profile) {
-      setDisabled(!(username && accountID));
+      setDisabled(
+        !(username && accountID && !usernameError && !accountIDError)
+      );
     } else {
-      setDisabled(!(email && password));
+      setDisabled(!(email && password && !emailError && !passwordError));
     }
-  }, [email, password, username, accountID, profile]);
+  }, [
+    email,
+    password,
+    username,
+    accountID,
+    profile,
+    emailError,
+    passwordError,
+    usernameError,
+    accountIDError,
+  ]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    console.log({ email, password });
+    console.log({ email, password, username, accountID });
   };
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -35,6 +51,31 @@ export default function Signup() {
       const reader = new FileReader();
       reader.onload = () => setProfileImage(reader.result as string);
       reader.readAsDataURL(file);
+    }
+  };
+
+  const handleUsernameChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setUsername(value);
+
+    if (value.length < 2 || value.length > 7) {
+      setUsernameError("사용자 이름은 2자에서 7자 이내여야 합니다.");
+    } else {
+      setUsernameError("");
+    }
+  };
+
+  const handleAccountIDChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setAccountID(value);
+
+    const accountIDPattern = /^[a-zA-Z0-9._]+$/;
+    if (!accountIDPattern.test(value)) {
+      setAccountIDError(
+        "계정 ID는 영문, 숫자, 특수문자(.)와 (_)만 사용할 수 있습니다."
+      );
+    } else {
+      setAccountIDError("");
     }
   };
 
@@ -66,23 +107,24 @@ export default function Signup() {
               id="input-username"
               placeholder="2~7자 이내여야 합니다."
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={handleUsernameChange}
             />
+            {usernameError && <ErrorMessage>{usernameError}</ErrorMessage>}
             <label htmlFor="input-pw">계정ID</label>
             <Input
               type="text"
               id="input-accountID"
               placeholder="영문, 숫자, 특수문자(.),(_)만 사용 가능합니다."
               value={accountID}
-              onChange={(e) => setAccountID(e.target.value)}
+              onChange={handleAccountIDChange}
             />
+            {accountIDError && <ErrorMessage>{accountIDError}</ErrorMessage>}
             <Button
               type="submit"
               $width="322px"
               $height="44px"
               disabled={disabled}
               text="POOW 시작하기"
-              onClick={() => {}}
             />
           </>
         ) : (
@@ -95,6 +137,7 @@ export default function Signup() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
+            {emailError && <ErrorMessage>{emailError}</ErrorMessage>}
             <label htmlFor="input-pw">비밀번호</label>
             <Input
               type="password"
@@ -103,6 +146,7 @@ export default function Signup() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
+            {passwordError && <ErrorMessage>{passwordError}</ErrorMessage>}
             <Button
               type="button"
               $width="322px"
@@ -154,4 +198,10 @@ const ProfileUploadButtonStyle = styled.div`
   input[type="file"] {
     display: none;
   }
+`;
+
+const ErrorMessage = styled.p`
+  color: #eb5757;
+  font-size: 12px;
+  margin-top: 6px;
 `;
