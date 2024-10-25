@@ -1,11 +1,13 @@
 import React, { FormEvent, useEffect, useState } from "react";
 import Button from "../components/Button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import Input from "../components/Input";
 import { auth } from "../firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
 export default function Login() {
+  const navigate = useNavigate();
   const [disabled, setDisabled] = useState<boolean>(true);
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -18,6 +20,18 @@ export default function Login() {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+
+    try {
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const user = userCredential.user;
+      navigate("/");
+    } catch (e) {
+      console.log(e);
+    }
 
     console.log({ email, password });
   };
@@ -81,8 +95,8 @@ export const MainStyle = styled.main`
     padding-top: 16px;
   }
 
-  input:nth-of-type(2) {
-    margin-bottom: 30px;
+  button {
+    margin-top: 30px;
   }
 
   a {
