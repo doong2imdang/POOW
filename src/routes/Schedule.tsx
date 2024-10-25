@@ -24,7 +24,7 @@ const ScheduleContainer = styled.div`
 	}
 `;
 
-export default function Schedule() {
+const Schedule: React.FC = () => {
 	return (
 		<>
 			<Header text />
@@ -36,4 +36,6 @@ export default function Schedule() {
 			</ScheduleContainer>
 		</>
 	);
-}
+};
+
+export default Schedule;
