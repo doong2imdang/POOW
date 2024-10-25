@@ -7,6 +7,7 @@ import iconWeather from "../assets/images/icon-fill-weather.svg";
 import iconChecklist from "../assets/images/icon-fill-checklist.svg";
 
 const Container = styled.div`
+	margin: 20px 0 0 0;
 	width: 355px;
 	height: 230px;
 	border: 1px var(--color-disabled) solid;
