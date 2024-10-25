@@ -9,6 +9,7 @@ interface ButtonProps {
   type?: "button" | "submit" | "reset";
   text?: string;
   disabled?: boolean;
+  onClick?: () => void;
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -19,6 +20,7 @@ const Button: React.FC<ButtonProps> = ({
   type = "button",
   text = "저장",
   disabled = true,
+  onClick,
 }) => {
   return (
     <ButtonStyle
@@ -28,6 +30,7 @@ const Button: React.FC<ButtonProps> = ({
       $color={$color}
       type={type}
       disabled={disabled}
+      onClick={onClick}
     >
       {text}
     </ButtonStyle>
