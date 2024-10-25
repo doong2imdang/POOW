@@ -5,8 +5,12 @@ import Input from "../components/Input";
 import Button from "../components/Button";
 import uploadProfile from "../assets/images/img-profile.svg";
 import imgButton from "../assets/images/icon-image-upload.svg";
+import { auth } from "../firebase";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
 
 export default function Signup() {
+  const navigate = useNavigate();
   const [disabled, setDisabled] = useState<boolean>(true);
   const [profile, setProfile] = useState<boolean>(false);
   const [email, setEmail] = useState<string>("");
@@ -42,7 +46,15 @@ export default function Signup() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    console.log({ email, password, username, accountID });
+    const credentials = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+    navigate("/login");
+    console.log(credentials.user);
+
+    console.log({ email, password, username, accountID, profileImage });
   };
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
