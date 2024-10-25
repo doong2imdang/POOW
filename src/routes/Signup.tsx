@@ -29,6 +29,15 @@ export default function Signup() {
     console.log({ email, password });
   };
 
+  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onload = () => setProfileImage(reader.result as string);
+      reader.readAsDataURL(file);
+    }
+  };
+
   console.log("disabeld", disabled, "profile", profile);
   return (
     <MainStyle>
@@ -43,7 +52,12 @@ export default function Signup() {
               </div>
               <label htmlFor="profile-upload">
                 <img src={imgButton} />
-                <input type="file" id="profile-upload" accept="image/*" />
+                <input
+                  type="file"
+                  id="profile-upload"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                />
               </label>
             </ProfileUploadButtonStyle>
             <label htmlFor="input-email">사용자이름</label>
