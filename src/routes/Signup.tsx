@@ -5,9 +5,10 @@ import Input from "../components/Input";
 import Button from "../components/Button";
 import uploadProfile from "../assets/images/img-profile.svg";
 import imgButton from "../assets/images/icon-image-upload.svg";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
+import { doc, setDoc } from "firebase/firestore";
 
 export default function Signup() {
   const navigate = useNavigate();
@@ -51,8 +52,17 @@ export default function Signup() {
       email,
       password
     );
+    await updateProfile(credentials.user, {
+      displayName: username,
+    });
+
+    await setDoc(doc(db, "user", credentials.user.uid), {
+      email: email,
+      username: username,
+      accountID: accountID,
+      image: profileImage,
+    });
     navigate("/login");
-    console.log(credentials.user);
 
     console.log({ email, password, username, accountID, profileImage });
   };
