@@ -78,8 +78,8 @@ const Header: React.FC<HeaderProps> = ({
             <img src={iconArrowLeft} alt="Back" />
           </button>
           <Button
-            background="var(--color-disabled)"
-            color="#fff"
+            $background="var(--color-disabled)"
+            $color="#fff"
             type="submit"
             disabled={buttonDisabled}
           />

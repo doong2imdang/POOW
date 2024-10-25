@@ -7,8 +7,10 @@ interface InputProps {
   color?: string;
   type?: "email" | "password" | "text";
   id?: string;
+  value?: string;
   placeholder?: string;
   borderBottom?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const Input: React.FC<InputProps> = ({
@@ -17,18 +19,22 @@ const Input: React.FC<InputProps> = ({
   color,
   type = "text",
   id,
+  value,
   placeholder = "이메일 주소를 입력해주세요.",
   borderBottom,
+  onChange,
 }) => {
   return (
     <StyledInput
       type={type}
       id={id}
+      value={value}
       width={width}
       height={height}
       color={color}
       placeholder={placeholder}
       borderBottom={borderBottom}
+      onChange={onChange}
     />
   );
 };

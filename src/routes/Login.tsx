@@ -3,6 +3,7 @@ import Button from "../components/Button";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import Input from "../components/Input";
+import { auth } from "../firebase";
 
 export default function Login() {
   const [disabeld, setDisabeld] = useState(true);
@@ -20,8 +21,8 @@ export default function Login() {
         />
         <Button
           type="submit"
-          width="322px"
-          height="44px"
+          $width="322px"
+          $height="44px"
           disabled={disabeld}
           text="로그인"
         />
