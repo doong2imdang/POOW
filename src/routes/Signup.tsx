@@ -8,7 +8,15 @@ import imgButton from "../assets/images/icon-image-upload.svg";
 import { auth, db, storage } from "../firebase";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import { doc, setDoc, updateDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDocs,
+  query,
+  setDoc,
+  updateDoc,
+  where,
+} from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 export default function Signup() {
@@ -82,6 +90,17 @@ export default function Signup() {
 
     if (auth.currentUser) {
       try {
+        const accountIDQuery = query(
+          collection(db, "user"),
+          where("accountID", "==", accountID)
+        );
+        const querySnapshot = await getDocs(accountIDQuery);
+
+        if (!querySnapshot.empty) {
+          setAccountIDError("이미 사용 중인 ID입니다.");
+          return;
+        }
+
         await updateProfile(auth.currentUser, {
           displayName: username,
           photoURL: profileImage,
@@ -132,9 +151,7 @@ export default function Signup() {
 
     const accountIDPattern = /^[a-zA-Z0-9._]+$/;
     if (!accountIDPattern.test(value)) {
-      setAccountIDError(
-        "계정 ID는 영문, 숫자, 특수문자(.)와 (_)만 사용할 수 있습니다."
-      );
+      setAccountIDError("영문, 숫자, 밑줄 및 마침표만 사용할 수 있습니다.");
     } else {
       setAccountIDError("");
     }
