@@ -7,7 +7,6 @@ import Login from "./routes/Login";
 import LoginMethod from "./routes/LoginMethod";
 import Signup from "./routes/Signup";
 import Splash from "./routes/Splash";
-import SetProfile from "./routes/SetProfile";
 import CheckList from "./routes/CheckList";
 import EditProfile from "./routes/EditProfile";
 import Mood from "./routes/Mood";
@@ -33,10 +32,6 @@ const router = createBrowserRouter([
       {
         path: "profile",
         element: <Profile />,
-      },
-      {
-        path: "setprofile",
-        element: <SetProfile />,
       },
       {
         path: "checklist",
