@@ -282,7 +282,7 @@ const ProfileUploadButtonStyle = styled.div`
   }
 `;
 
-const ErrorMessage = styled.p`
+export const ErrorMessage = styled.p`
   color: #eb5757;
   font-size: 12px;
   margin-top: 6px;
