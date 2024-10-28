@@ -1,16 +1,19 @@
-import React, { FormEvent, useEffect, useState } from "react";
+import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import Button from "../components/Button";
 import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import Input from "../components/Input";
 import { auth } from "../firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { FirebaseError } from "firebase/app";
+import { ErrorMessage } from "./Signup";
 
 export default function Login() {
   const navigate = useNavigate();
   const [disabled, setDisabled] = useState<boolean>(true);
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [error, setError] = useState<string>("");
   const user = auth.currentUser;
   console.log(user);
 
@@ -30,10 +33,23 @@ export default function Login() {
       const user = userCredential.user;
       navigate("/");
     } catch (e) {
-      console.log(e);
+      if (e instanceof FirebaseError) {
+        setError("이메일 또는 비밀번호가 일치하지 않습니다.");
+      }
     }
 
     console.log({ email, password });
+  };
+
+  const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setEmail(value);
+    setError("");
+  };
+  const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setPassword(value);
+    setError("");
   };
 
   return (
@@ -45,7 +61,7 @@ export default function Login() {
           type="email"
           id="input-email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={handleEmailChange}
         />
         <label htmlFor="input-pw">비밀번호</label>
         <Input
@@ -53,8 +69,9 @@ export default function Login() {
           id="input-pw"
           placeholder="비밀번호를 입력해주세요."
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={handlePasswordChange}
         />
+        {error && <ErrorMessage>{error}</ErrorMessage>}
         <Button
           type="submit"
           $width="322px"
