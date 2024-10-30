@@ -1,5 +1,117 @@
 import React from "react";
+import Header from "../components/Header";
+import styled from "styled-components";
+import IconSearch from "../assets/images/icon-search-light.svg";
+import IconDate from "../assets/images/icon-date.svg";
+
+const SetScheduleContainer = styled.div`
+	display: flex;
+	height: calc(100vh - 108px);
+	overflow-y: auto;
+	padding: 20px 39px 0 29px;
+	font-size: 14px;
+	flex-direction: column;
+`;
+
+const Section = styled.div`
+	display: flex;
+	width: 100%;
+	margin-bottom: 19px;
+	align-items: flex-start;
+	position: relative;
+`;
+
+const Label = styled.label`
+	width: 70px;
+	display: flex;
+	align-items: center;
+`;
+
+const Input = styled.input`
+	border: none;
+	border-bottom: 1px solid var(--color-disabled);
+	width: 250px;
+	padding: 0 0 5px 0;
+	font-size: 14px;
+`;
+
+const BtnSearch = styled.button`
+	background: none;
+	border: none;
+	top: -1px;
+	left: 300px;
+	cursor: pointer;
+	position: absolute;
+	z-index: 2;
+	width: 16px;
+	height: 16px;
+
+	img {
+		width: 16px;
+		height: 16px;
+	}
+`;
+
+const BtnDate = styled.button`
+	background: none;
+	border: none;
+	top: -1px;
+	left: 300px;
+	cursor: pointer;
+	position: absolute;
+	z-index: 2;
+	width: 15px;
+	height: 17px;
+
+	img {
+		width: 15px;
+		height: 17px;
+	}
+`;
+
+const Image = styled.div`
+	width: 250px;
+	height: 360px;
+	background-color: #f2f2f2;
+	border-radius: 10px;
+`;
 
 export default function SetSchedule() {
-  return <div>SetSchedule</div>;
+	return (
+		<>
+			<Header set />
+			<SetScheduleContainer>
+				<Section>
+					<Label htmlFor="name">관람명</Label>
+					<Input type="text" id="name" placeholder="관람명을 검색해주세요." />
+					<BtnSearch>
+						<img src={IconSearch} alt="" />
+					</BtnSearch>
+				</Section>
+				<Section>
+					<Label htmlFor="image">이미지</Label>
+					<Image></Image>
+				</Section>
+				<Section>
+					<Label htmlFor="location">장소</Label>
+					<Input type="text" id="location" placeholder="장소를 입력해주세요." />
+				</Section>
+				<Section>
+					<Label htmlFor="date">관람날짜</Label>
+					<Input type="text" id="date" placeholder="관람날짜를 선택해주세요." />
+					<BtnDate>
+						<img src={IconDate} alt="" />
+					</BtnDate>
+				</Section>
+				<Section>
+					<Label htmlFor="time">관람시간</Label>
+					<Input type="text" id="time" placeholder="관람시간을 입력해주세요." />
+				</Section>
+				<Section>
+					<Label htmlFor="cast">출연진</Label>
+					<Input type="text" id="cast" placeholder="출연진을 입력해주세요." />
+				</Section>
+			</SetScheduleContainer>
+		</>
+	);
 }
