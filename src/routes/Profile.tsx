@@ -1,5 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
+import Header from "../components/Header";
 
 export default function Profile() {
-  return <div>Profile</div>;
+  const [isBottomSheet, setIsBottomSheet] = useState<boolean>(false);
+
+  const toggleBottomSheet = () => {
+    setIsBottomSheet((prev) => !prev);
+  };
+
+  return (
+    <>
+      <Header
+        text
+        bottomSheetText="삭제, 수정"
+        isBottomSheet={isBottomSheet}
+        toggleBottomSheet={toggleBottomSheet}
+      />
+    </>
+  );
 }

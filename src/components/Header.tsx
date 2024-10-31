@@ -8,6 +8,7 @@ import iconBack from "../assets/images/icon-back.svg";
 import iconNext from "../assets/images/icon-next.svg";
 import Button from "./Button";
 import { useNavigate } from "react-router-dom";
+import BottomSheet from "./BottomSheet";
 
 interface HeaderProps {
   main?: boolean;
@@ -16,6 +17,9 @@ interface HeaderProps {
   set?: boolean;
   buttonDisabled?: boolean;
   hasInput?: boolean;
+  bottomSheetText?: string;
+  isBottomSheet?: boolean;
+  toggleBottomSheet?: () => void;
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -25,67 +29,94 @@ const Header: React.FC<HeaderProps> = ({
   set,
   buttonDisabled,
   hasInput,
+  bottomSheetText,
+  isBottomSheet,
+  toggleBottomSheet,
 }) => {
   const navigate = useNavigate();
+
   return (
-    <HeaderStyle>
-      {main && (
-        <>
-          <button type="button">
-            <img src={logoTxt} alt="Logo" />
-          </button>
-          <button type="button" onClick={() => navigate("/search")}>
-            <img src={iconSearch} alt="Search" />
-          </button>
-        </>
+    <>
+      {isBottomSheet && (
+        <BottomSheet
+          text={bottomSheetText}
+          toggleBottomSheet={toggleBottomSheet || (() => {})}
+        />
       )}
-
-      {search && (
-        <>
-          <button type="button">
-            <img src={iconArrowLeft} alt="Back" />
-          </button>
-          <InputStyle type="text" placeholder="mood를 검색해보세요." />
-        </>
-      )}
-
-      {text && (
-        <>
-          <button type="button">
-            <img src={iconArrowLeft} alt="Back" />
-          </button>
-          <IconsWrapper>
-            {hasInput && (
-              <>
-                <button type="button">
-                  <img src={iconBack} alt="뒤로가기" />
-                </button>
-                <button type="button">
-                  <img src={iconNext} alt="다음" />
-                </button>
-              </>
-            )}
+      <HeaderStyle>
+        {main && (
+          <>
             <button type="button">
-              <img src={iconMoreVertical} alt="More" />
+              <img src={logoTxt} alt="Logo" />
             </button>
-          </IconsWrapper>
-        </>
-      )}
+            <button type="button" onClick={() => navigate("/search")}>
+              <img src={iconSearch} alt="Search" />
+            </button>
+          </>
+        )}
 
-      {set && (
-        <>
-          <button type="button">
-            <img src={iconArrowLeft} alt="Back" />
-          </button>
-          <Button
-            $background="var(--color-disabled)"
-            $color="#fff"
-            type="submit"
-            disabled={buttonDisabled}
-          />
-        </>
-      )}
-    </HeaderStyle>
+        {search && (
+          <>
+            <button
+              type="button"
+              onClick={() => {
+                navigate(-1);
+              }}
+            >
+              <img src={iconArrowLeft} alt="Back" />
+            </button>
+            <InputStyle type="text" placeholder="mood를 검색해보세요." />
+          </>
+        )}
+
+        {text && (
+          <>
+            <button
+              type="button"
+              onClick={() => {
+                navigate(-1);
+              }}
+            >
+              <img src={iconArrowLeft} alt="Back" />
+            </button>
+            <IconsWrapper>
+              {hasInput && (
+                <>
+                  <button type="button">
+                    <img src={iconBack} alt="뒤로가기" />
+                  </button>
+                  <button type="button">
+                    <img src={iconNext} alt="다음" />
+                  </button>
+                </>
+              )}
+              <button type="button" onClick={toggleBottomSheet}>
+                <img src={iconMoreVertical} alt="More" />
+              </button>
+            </IconsWrapper>
+          </>
+        )}
+
+        {set && (
+          <>
+            <button
+              type="button"
+              onClick={() => {
+                navigate(-1);
+              }}
+            >
+              <img src={iconArrowLeft} alt="Back" />
+            </button>
+            <Button
+              $background="var(--color-disabled)"
+              $color="#fff"
+              type="submit"
+              disabled={buttonDisabled}
+            />
+          </>
+        )}
+      </HeaderStyle>
+    </>
   );
 };
 
