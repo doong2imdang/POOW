@@ -14,7 +14,7 @@ const ScheduleContainer = styled.div`
 
 	&::-webkit-scrollbar {
 		width: 7px;
-		/* display: none; */
+		display: none;
 	}
 
 	&::-webkit-scrollbar-thumb {
