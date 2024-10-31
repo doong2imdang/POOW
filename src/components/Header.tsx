@@ -57,7 +57,12 @@ const Header: React.FC<HeaderProps> = ({
 
         {search && (
           <>
-            <button type="button">
+            <button
+              type="button"
+              onClick={() => {
+                navigate(-1);
+              }}
+            >
               <img src={iconArrowLeft} alt="Back" />
             </button>
             <InputStyle type="text" placeholder="mood를 검색해보세요." />
@@ -66,7 +71,12 @@ const Header: React.FC<HeaderProps> = ({
 
         {text && (
           <>
-            <button type="button">
+            <button
+              type="button"
+              onClick={() => {
+                navigate(-1);
+              }}
+            >
               <img src={iconArrowLeft} alt="Back" />
             </button>
             <IconsWrapper>
@@ -89,7 +99,12 @@ const Header: React.FC<HeaderProps> = ({
 
         {set && (
           <>
-            <button type="button">
+            <button
+              type="button"
+              onClick={() => {
+                navigate(-1);
+              }}
+            >
               <img src={iconArrowLeft} alt="Back" />
             </button>
             <Button
