@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import iconHome from "../assets/images/icon-home.svg";
 import iconHomeFill from "../assets/images/icon-home-fill.svg";
@@ -113,7 +113,16 @@ const icons: Icon[] = [
 ];
 
 const NavBar: React.FC = () => {
+	const location = useLocation();
 	const [activeId, setActiveId] = useState<string>("home");
+
+	useEffect(() => {
+		const currentPath = location.pathname;
+		const activeIcon = icons.find((icon) => icon.path === currentPath);
+		if (activeIcon) {
+			setActiveId(activeIcon.id);
+		}
+	}, [location.pathname]);
 
 	return (
 		<NavbarStyle>
