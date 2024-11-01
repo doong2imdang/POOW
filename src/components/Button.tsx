@@ -13,7 +13,7 @@ interface ButtonProps {
 }
 
 const Button: React.FC<ButtonProps> = ({
-  $background = "transparent",
+  $background = "var(--color-main)",
   $width = "90px",
   $height = "32px",
   $color = "var(--color-dark)",
@@ -38,18 +38,16 @@ const Button: React.FC<ButtonProps> = ({
 };
 
 const ButtonStyle = styled.button<ButtonProps>`
-  background-color: ${(props) => props.$background};
   width: ${(props) => props.$width};
   height: ${(props) => props.$height};
   color: ${(props) => props.$color};
-  border-radius: 20px;
   font-weight: bold;
   font-size: 14px;
-
-  ${(props) =>
-    props.disabled
-      ? `background-color: var(--color-disabled); color: #fff; pointer-events: none; `
-      : `background-color: var(--color-main); color: var(--color-dark); `}
+  border-radius: 20px;
+  background-color: ${(props) =>
+    props.disabled ? "var(--color-disabled)" : props.$background};
+  color: ${(props) => (props.disabled ? "#fff" : props.$color)};
+  pointer-events: ${(props) => (props.disabled ? "none" : "auto")};
 `;
 
 export default Button;
