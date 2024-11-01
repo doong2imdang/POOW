@@ -20,6 +20,8 @@ interface HeaderProps {
   bottomSheetText?: string;
   isBottomSheet?: boolean;
   toggleBottomSheet?: () => void;
+  background?: string;
+  color?: string;
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -32,6 +34,8 @@ const Header: React.FC<HeaderProps> = ({
   bottomSheetText,
   isBottomSheet,
   toggleBottomSheet,
+  background,
+  color,
 }) => {
   const navigate = useNavigate();
 
@@ -108,8 +112,8 @@ const Header: React.FC<HeaderProps> = ({
               <img src={iconArrowLeft} alt="Back" />
             </button>
             <Button
-              $background="var(--color-disabled)"
-              $color="#fff"
+              $background={background}
+              $color={color}
               type="submit"
               disabled={buttonDisabled}
             />
