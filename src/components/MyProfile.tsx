@@ -7,14 +7,26 @@ import { onAuthStateChanged } from "firebase/auth";
 
 export default function MyProfile() {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const user = auth.currentUser;
+  console.log(user);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user?.photoURL) {
+        setImageUrl(user.photoURL);
+      } else {
+        setImageUrl(null);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   return (
     <MyProfileStyle>
-      <img src={profileImage} alt="나의 프로필 이미지" />
+      <img src={imageUrl || profileImage} alt="" />
       <strong>돈워리 비해피</strong>
-      <p>
-        <span>@</span>DWBH
-      </p>
+      <p>@DWBH</p>
       <p>
         mood<span>6</span>
       </p>
@@ -62,10 +74,6 @@ const MyProfileStyle = styled.div`
     &:nth-of-type(1) {
       font-size: 12px;
       color: #767676;
-
-      span {
-        padding-right: 3px;
-      }
     }
 
     &:nth-of-type(2) {
