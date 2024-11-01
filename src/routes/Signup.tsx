@@ -267,13 +267,14 @@ const ProfileUploadButtonStyle = styled.div`
     position: absolute;
     top: 70%;
     left: 55%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 
     img {
       width: 22px;
       height: 22px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
     }
   }
 
