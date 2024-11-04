@@ -247,7 +247,7 @@ export default function Signup() {
   );
 }
 
-const ProfileUploadButtonStyle = styled.div`
+export const ProfileUploadButtonStyle = styled.div`
   position: relative;
 
   div > img {
