@@ -21,72 +21,72 @@ import reset from "styled-reset";
 import styled from "styled-components";
 
 const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <Layout />,
-    children: [
-      {
-        path: "",
-        element: <Home />,
-      },
-      {
-        path: "profile",
-        element: <Profile />,
-      },
-      {
-        path: "checklist",
-        element: <CheckList />,
-      },
-      {
-        path: "setchecklist",
-        element: <SetCheckList />,
-      },
-      {
-        path: "editprofile",
-        element: <EditProfile />,
-      },
-      {
-        path: "mood",
-        element: <Mood />,
-      },
-      {
-        path: "setmood",
-        element: <SetMood />,
-      },
-      {
-        path: "schedule",
-        element: <Schedule />,
-      },
-      {
-        path: "setschedule",
-        element: <SetSchedule />,
-      },
-      {
-        path: "search",
-        element: <Search />,
-      },
-    ],
-  },
-  {
-    path: "/login",
-    element: <Login />,
-  },
-  {
-    path: "/loginmethod",
-    element: <LoginMethod />,
-  },
-  {
-    path: "/signup",
-    element: <Signup />,
-  },
-  {
-    path: "/splash",
-    element: <Splash />,
-  },
-  {
-    path: "/error",
-    element: <Error />,
-  },
+	{
+		path: "/",
+		element: <Layout />,
+		children: [
+			{
+				path: "",
+				element: <Home />,
+			},
+			{
+				path: "profile",
+				element: <Profile />,
+			},
+			{
+				path: "checklist",
+				element: <CheckList />,
+			},
+			{
+				path: "setchecklist",
+				element: <SetCheckList />,
+			},
+			{
+				path: "editprofile",
+				element: <EditProfile />,
+			},
+			{
+				path: "mood",
+				element: <Mood />,
+			},
+			{
+				path: "setmood",
+				element: <SetMood />,
+			},
+			{
+				path: "schedule",
+				element: <Schedule />,
+			},
+			{
+				path: "setschedule",
+				element: <SetSchedule />,
+			},
+			{
+				path: "search",
+				element: <Search />,
+			},
+		],
+	},
+	{
+		path: "/login",
+		element: <Login />,
+	},
+	{
+		path: "/loginmethod",
+		element: <LoginMethod />,
+	},
+	{
+		path: "/signup",
+		element: <Signup />,
+	},
+	{
+		path: "/splash",
+		element: <Splash />,
+	},
+	{
+		path: "/error",
+		element: <Error />,
+	},
 ]);
 
 const GlobalStyles = createGlobalStyle`
@@ -131,32 +131,31 @@ background: white;
 `;
 
 const Container = styled.div`
-  width: 390px;
-  height: 100vh;
-  margin: 0 auto;
-  background: white;
+	width: 390px;
+	height: 100vh;
+	margin: 0 auto;
+	background: white;
 `;
 
 const App: React.FC = () => {
-  const [splashVisible, setSplashVisible] = useState<boolean>(true);
+	const [splashVisible, setSplashVisible] = useState<boolean>(true);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setSplashVisible(false);
-    }, 2000);
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			setSplashVisible(false);
+		}, 2000);
 
-    return () => clearTimeout(timer);
-  }, []);
+		return () => clearTimeout(timer);
+	}, []);
 
-  return (
-    <>
-      <GlobalStyles />
-      <Container>
-        {splashVisible ? <Splash /> : null}
-        <RouterProvider router={router} />
-      </Container>
-    </>
-  );
+	return (
+		<>
+			<GlobalStyles />
+			<Container>
+				{splashVisible ? <Splash /> : <RouterProvider router={router} />}
+			</Container>
+		</>
+	);
 };
 
 export default App;
