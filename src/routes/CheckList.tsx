@@ -4,15 +4,21 @@ import Header from "../components/Header";
 import iconCheckListFill from "../assets/images/icon-checkbox-fill.svg";
 import iconCheck from "../assets/images/icon-checkbox.svg";
 
-const initialItems = [
+interface Item {
+	id: number;
+	label: string;
+	isChecked: boolean;
+}
+
+const initialItems: Item[] = [
 	{ id: 1, label: "슬로건", isChecked: false },
 	{ id: 2, label: "응원봉", isChecked: false },
 	{ id: 3, label: "민증", isChecked: false },
 ];
 
-export default function CheckList() {
+const CheckList: React.FC = () => {
 	const [isBottomSheet, setIsBottomSheet] = useState<boolean>(false);
-	const [items, setItems] = useState(initialItems);
+	const [items, setItems] = useState<Item[]>(initialItems);
 
 	const toggleBottomSheet = () => {
 		setIsBottomSheet((prev) => !prev);
@@ -58,7 +64,7 @@ export default function CheckList() {
 			</Main>
 		</>
 	);
-}
+};
 
 const Main = styled.main`
 	padding: 21px 31px;
@@ -101,3 +107,5 @@ const CheckListContent = styled.div`
 		}
 	}
 `;
+
+export default CheckList;
