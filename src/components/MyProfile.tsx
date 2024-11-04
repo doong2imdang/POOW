@@ -4,8 +4,10 @@ import Button from "../components/Button";
 import profileImage from "../assets/images/img-profile.svg";
 import { auth } from "../firebase";
 import { onAuthStateChanged } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
 
 export default function MyProfile() {
+  const navigate = useNavigate();
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const user = auth.currentUser;
   console.log(user);
@@ -35,6 +37,9 @@ export default function MyProfile() {
         $background="white"
         disabled={false}
         text="프로필 수정"
+        onClick={() => {
+          navigate("/editprofile");
+        }}
       />
       <Button
         $width="120px"
@@ -42,6 +47,9 @@ export default function MyProfile() {
         $background="var(--color-main)"
         disabled={false}
         text="일정 추가"
+        onClick={() => {
+          navigate("/setschedule");
+        }}
       />
     </MyProfileStyle>
   );
