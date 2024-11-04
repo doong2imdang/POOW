@@ -21,12 +21,11 @@ const NavbarStyle = styled.nav`
 	position: fixed;
 	bottom: 0;
 	background-color: #fff;
-	/* border: 1px solid black; */
 `;
 
 interface NavItemProps {
-	isActive: boolean;
-	isHomeActive: boolean;
+	$active: boolean;
+	$homeActive: boolean;
 }
 
 const NavItem = styled.div<NavItemProps & { id: string }>`
@@ -44,20 +43,20 @@ const NavItem = styled.div<NavItemProps & { id: string }>`
 
 	span {
 		margin-top: 4px;
-		color: ${({ isActive }) =>
-			isActive ? "var(--color-main)" : "var(--color-dark)"};
+		color: ${({ $active }) =>
+			$active ? "var(--color-main)" : "var(--color-dark)"};
 	}
 
 	&::before {
 		content: "";
 		position: absolute;
-		width: ${({ isHomeActive, id }) =>
-			isHomeActive ? "56px" : id === "heart" ? "72px" : "0"};
-		height: ${({ isHomeActive, id }) =>
-			isHomeActive ? "56px" : id === "heart" ? "72px" : "0"};
+		width: ${({ $homeActive, id }) =>
+			$homeActive ? "56px" : id === "heart" ? "72px" : "0"};
+		height: ${({ $homeActive, id }) =>
+			$homeActive ? "56px" : id === "heart" ? "72px" : "0"};
 		background-color: var(--color-bg);
 		border-radius: 50%;
-		top: ${({ isHomeActive }) => (isHomeActive ? "50%" : "31%")};
+		top: ${({ $homeActive }) => ($homeActive ? "50%" : "31%")};
 		left: 50%;
 		transform: translate(-50%, -50%);
 		z-index: -1;
@@ -130,8 +129,8 @@ const NavBar: React.FC = () => {
 				<Link to={path} key={id} style={{ textDecoration: "none" }}>
 					<NavItem
 						id={id}
-						isActive={activeId === id}
-						isHomeActive={activeId === "home"}
+						$active={activeId === id}
+						$homeActive={activeId === "home"}
 						onClick={() => setActiveId(id)}
 					>
 						<img src={activeId === id ? iconFill : icon} alt={label} />
