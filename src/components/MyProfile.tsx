@@ -2,22 +2,34 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import Button from "../components/Button";
 import profileImage from "../assets/images/img-profile.svg";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
+import { doc, getDoc } from "firebase/firestore";
 
 export default function MyProfile() {
   const navigate = useNavigate();
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const user = auth.currentUser;
-  console.log(user);
+  const [username, setUsername] = useState<string>("");
+  const [accountID, setAccountID] = useState<string>("");
+  const [imageURL, setImageURL] = useState<string | null>(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        const userDocRef = doc(db, "user", user.uid);
+        const userDoc = await getDoc(userDocRef);
+
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          setUsername(userData.username || "");
+          setAccountID(userData.accountID || "");
+        }
+      }
+
       if (user?.photoURL) {
-        setImageUrl(user.photoURL);
+        setImageURL(user.photoURL);
       } else {
-        setImageUrl(null);
+        setImageURL(null);
       }
     });
 
@@ -26,9 +38,12 @@ export default function MyProfile() {
 
   return (
     <MyProfileStyle>
-      <img src={imageUrl || profileImage} alt="" />
-      <strong>돈워리 비해피</strong>
-      <p>@DWBH</p>
+      <img src={imageURL || profileImage} alt="" />
+      <strong>{username}</strong>
+      <p>
+        <span>@</span>
+        {accountID}
+      </p>
       <p>
         mood<span>6</span>
       </p>
