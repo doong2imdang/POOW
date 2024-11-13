@@ -22,6 +22,7 @@ interface HeaderProps {
   toggleBottomSheet?: () => void;
   background?: string;
   color?: string;
+  onSave?: () => void;
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -36,6 +37,7 @@ const Header: React.FC<HeaderProps> = ({
   toggleBottomSheet,
   background,
   color,
+  onSave,
 }) => {
   const navigate = useNavigate();
 
@@ -116,6 +118,7 @@ const Header: React.FC<HeaderProps> = ({
               $color={color}
               type="submit"
               disabled={buttonDisabled}
+              onClick={onSave}
             />
           </>
         )}
