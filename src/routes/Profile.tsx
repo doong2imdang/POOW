@@ -15,7 +15,7 @@ export default function Profile() {
     <>
       <Header
         text
-        bottomSheetText="삭제, 수정"
+        bottomSheetText="설정 및 개인정보, 로그아웃"
         isBottomSheet={isBottomSheet}
         toggleBottomSheet={toggleBottomSheet}
       />
