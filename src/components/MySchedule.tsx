@@ -68,7 +68,7 @@ const ScheduleList = styled.ul`
 
   li {
     width: 87px;
-    height: 138px;
+    height: auto;
     border: 1px solid var(--color-disabled);
     border-radius: 5px;
     padding: 5px;
@@ -80,6 +80,7 @@ const ScheduleList = styled.ul`
       border-radius: 5px;
       display: block;
       overflow: hidden;
+      border: 1px solid var(--color-disabled);
     }
 
     p {
@@ -89,6 +90,7 @@ const ScheduleList = styled.ul`
       font-size: 10px;
       color: var(--color-dark);
       font-weight: bold;
+      padding-top: 4px;
     }
 
     span {
