@@ -29,6 +29,7 @@ export default function EditProfile() {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [usernameError, setUsernameError] = useState<string>("");
   const [accountIDError, setAccountIDError] = useState<string>("");
+  const [currentAccountID, setCurrentAccountID] = useState<string>("");
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -40,6 +41,7 @@ export default function EditProfile() {
           const userData = userDoc.data();
           setUsername(userData.username || "");
           setAccountID(userData.accountID || "");
+          setCurrentAccountID(userData.accountID || "");
         }
       }
 
@@ -121,6 +123,15 @@ export default function EditProfile() {
       return;
     } else {
       setAccountIDError("");
+    }
+
+    // 자신의 계정 ID는 중복 검사에서 제외
+    if (value === currentAccountID) {
+      setAccountIDError("");
+      if (!usernameError) {
+        setDisabled(false);
+      }
+      return;
     }
 
     // FireStore에서 계정ID 중복 확인
