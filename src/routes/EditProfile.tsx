@@ -9,7 +9,15 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { auth, db, storage } from "../firebase";
 import { MainStyle } from "./Login";
 import { onAuthStateChanged, updateProfile } from "firebase/auth";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  updateDoc,
+  where,
+} from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 
 export default function EditProfile() {
@@ -101,13 +109,30 @@ export default function EditProfile() {
     }
   };
 
-  const handleAccountIDChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleAccountIDChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setAccountID(value);
 
     const accountIDPattern = /^[a-zA-Z0-9._]+$/;
+
     if (!accountIDPattern.test(value)) {
       setAccountIDError("영문, 숫자, 밑줄 및 마침표만 사용할 수 있습니다.");
+      setDisabled(true);
+      return;
+    } else {
+      setAccountIDError("");
+    }
+
+    // FireStore에서 계정ID 중복 확인
+    const accountIDQuery = query(
+      collection(db, "user"),
+      where("accountID", "==", value)
+    );
+
+    const querySnapshot = await getDocs(accountIDQuery);
+
+    if (!querySnapshot.empty) {
+      setAccountIDError("이미 사용 중인 계정ID입니다.");
       setDisabled(true);
     } else {
       setAccountIDError("");
