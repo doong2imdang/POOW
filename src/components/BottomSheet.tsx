@@ -13,20 +13,23 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
   const modalTexts = text ? text.split(",") : [];
 
   return (
-    <BottomSheetWrapper>
-      <BottomSheetHeader>
-        <button type="button" onClick={toggleBottomSheet}></button>
-      </BottomSheetHeader>
-      <BottomSheetContent>
-        {modalTexts.length > 1 ? (
-          modalTexts.map((item, index) => (
-            <TextItem key={index}>{item.trim()}</TextItem>
-          ))
-        ) : (
-          <TextItem>{text}</TextItem>
-        )}
-      </BottomSheetContent>
-    </BottomSheetWrapper>
+    <>
+      <BottomSheetBg></BottomSheetBg>
+      <BottomSheetWrapper>
+        <BottomSheetHeader>
+          <button type="button" onClick={toggleBottomSheet}></button>
+        </BottomSheetHeader>
+        <BottomSheetContent>
+          {modalTexts.length > 1 ? (
+            modalTexts.map((item, index) => (
+              <TextItem key={index}>{item.trim()}</TextItem>
+            ))
+          ) : (
+            <TextItem>{text}</TextItem>
+          )}
+        </BottomSheetContent>
+      </BottomSheetWrapper>
+    </>
   );
 };
 
@@ -48,6 +51,17 @@ const slideIn = keyframes`
 // transform: translateY(100%);
 //   }
 // `;
+
+const BottomSheetBg = styled.div`
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 390px;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 9;
+`;
 
 const BottomSheetWrapper = styled.div`
   position: fixed;
