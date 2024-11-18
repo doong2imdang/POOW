@@ -34,4 +34,10 @@ const Main = styled.main`
   display: flex;
   flex-direction: column;
   gap: 6px;
+
+  overflow-x: hidden;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
