@@ -1,5 +1,6 @@
 import React from "react";
 import styled, { keyframes } from "styled-components";
+import SelectModal from "./SelectModal";
 
 interface BottomSheetProps {
   text?: string;
@@ -15,6 +16,7 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
   return (
     <>
       <BottomSheetBg onClick={toggleBottomSheet}></BottomSheetBg>
+      <SelectModal />
       <BottomSheetWrapper>
         <BottomSheetHeader>
           <button type="button" onClick={toggleBottomSheet}></button>
@@ -93,9 +95,14 @@ const BottomSheetContent = styled.div`
 
 const TextItem = styled.div`
   font-size: 14px;
-  padding: 14px 0 14px 26px;
+  padding: 14px 26px;
+  border-radius: 5px;
   color: var(--color-dark);
   cursor: pointer;
+
+  &:hover {
+    background-color: var(--color-main);
+  }
 `;
 
 export default BottomSheet;
