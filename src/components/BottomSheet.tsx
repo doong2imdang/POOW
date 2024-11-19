@@ -14,7 +14,7 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
 
   return (
     <>
-      <BottomSheetBg></BottomSheetBg>
+      <BottomSheetBg onClick={toggleBottomSheet}></BottomSheetBg>
       <BottomSheetWrapper>
         <BottomSheetHeader>
           <button type="button" onClick={toggleBottomSheet}></button>
