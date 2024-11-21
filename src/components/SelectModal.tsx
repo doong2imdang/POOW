@@ -1,13 +1,31 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import styled from "styled-components";
 
-export default function SelectModal() {
+interface SelectModalProps {
+  message: ReactNode;
+  confirmText?: string;
+  cancelText?: string;
+  onConfirm: () => void;
+  onCancel: () => void;
+}
+
+export default function SelectModal({
+  message,
+  confirmText,
+  cancelText,
+  onConfirm,
+  onCancel,
+}: SelectModalProps) {
   return (
     <>
       <SelectModalWrapper>
-        <p>로그아웃하시겠습니까?</p>
-        <button type="button">취소</button>
-        <button type="button">로그아웃</button>
+        <p>{message}</p>
+        <button type="button" onClick={onCancel}>
+          {cancelText}
+        </button>
+        <button type="button" onClick={onConfirm}>
+          {confirmText}
+        </button>
       </SelectModalWrapper>
     </>
   );
@@ -24,14 +42,17 @@ const SelectModalWrapper = styled.div`
   overflow: hidden;
   color: var(--color-dark);
   display: grid;
+  text-align: center;
   grid-template-areas:
     "text text"
     "left right";
 
   p {
     font-size: 16px;
-    padding: 26px 45px;
+    padding: 26px 0;
     grid-area: text;
+    line-height: 20px;
+    margin: 0 auto;
   }
 
   button {
