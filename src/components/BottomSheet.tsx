@@ -33,6 +33,7 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
     setIsModalOpen(false);
     setModalType(null);
     setConfirmText("");
+    toggleBottomSheet();
   };
 
   const handleModalConfirm = () => {
