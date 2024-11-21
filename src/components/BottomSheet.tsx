@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled, { keyframes } from "styled-components";
 import SelectModal from "./SelectModal";
 
@@ -11,12 +11,60 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
   text,
   toggleBottomSheet,
 }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalType, setModalType] = useState<string | null>(null);
+  const [confirmText, setConfirmText] = useState<string>("");
+
   const modalTexts = text ? text.split(",") : [];
+
+  const handleOpenModal = (type: string) => {
+    const lastWord = type.split(" ").pop() || "";
+    setModalType(type);
+
+    if (type === "설정 및 개인정보") {
+      setConfirmText("확인");
+    } else {
+      setConfirmText(lastWord);
+    }
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setModalType(null);
+    setConfirmText("");
+  };
+
+  const handleModalConfirm = () => {
+    console.log(`${modalType} confirmed`);
+    handleCloseModal();
+  };
+
+  const handleModalCancel = () => {
+    console.log(`${modalType} canceled`);
+    handleCloseModal();
+  };
 
   return (
     <>
+      {isModalOpen && (
+        <SelectModal
+          message={
+            modalType === "설정 및 개인정보" ? (
+              <>
+                {modalType}로 <br /> 이동하시겠습니까?
+              </>
+            ) : (
+              `${modalType}하시겠습니까?`
+            )
+          }
+          confirmText={confirmText}
+          cancelText="취소"
+          onConfirm={handleModalConfirm}
+          onCancel={handleModalCancel}
+        />
+      )}
       <BottomSheetBg onClick={toggleBottomSheet}></BottomSheetBg>
-      <SelectModal />
       <BottomSheetWrapper>
         <BottomSheetHeader>
           <button type="button" onClick={toggleBottomSheet}></button>
@@ -24,10 +72,23 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
         <BottomSheetContent>
           {modalTexts.length > 1 ? (
             modalTexts.map((item, index) => (
-              <TextItem key={index}>{item.trim()}</TextItem>
+              <TextItem
+                key={index}
+                onClick={() => {
+                  handleOpenModal(item);
+                }}
+              >
+                {item.trim()}
+              </TextItem>
             ))
           ) : (
-            <TextItem>{text}</TextItem>
+            <TextItem
+              onClick={() => {
+                handleOpenModal(text || "");
+              }}
+            >
+              {text}
+            </TextItem>
           )}
         </BottomSheetContent>
       </BottomSheetWrapper>
