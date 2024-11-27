@@ -1,40 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import styled from "styled-components";
 import Button from "../components/Button";
 import profileImage from "../assets/images/img-profile.svg";
-import { auth, db } from "../firebase";
-import { onAuthStateChanged } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import { doc, getDoc } from "firebase/firestore";
+import { useSelector } from "react-redux";
+import { RootState } from "../redux/store";
 
 export default function MyProfile() {
   const navigate = useNavigate();
-  const [username, setUsername] = useState<string>("");
-  const [accountID, setAccountID] = useState<string>("");
-  const [imageURL, setImageURL] = useState<string | null>(null);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        const userDocRef = doc(db, "user", user.uid);
-        const userDoc = await getDoc(userDocRef);
-
-        if (userDoc.exists()) {
-          const userData = userDoc.data();
-          setUsername(userData.username || "");
-          setAccountID(userData.accountID || "");
-        }
-      }
-
-      if (user?.photoURL) {
-        setImageURL(user.photoURL);
-      } else {
-        setImageURL(null);
-      }
-    });
-
-    return () => unsubscribe();
-  }, []);
+  const { username, accountID, imageURL } = useSelector(
+    (state: RootState) => state.auth
+  );
 
   return (
     <MyProfileStyle>
