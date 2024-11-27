@@ -3,19 +3,21 @@ import Button from "../components/Button";
 import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import Input from "../components/Input";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { FirebaseError } from "firebase/app";
 import { ErrorMessage } from "./Signup";
+import { useDispatch } from "react-redux";
+import { login } from "../redux/authSlice";
+import { doc, getDoc } from "firebase/firestore";
 
 export default function Login() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [disabled, setDisabled] = useState<boolean>(true);
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string>("");
-  const user = auth.currentUser;
-  console.log(user);
 
   useEffect(() => {
     setDisabled(!(email && password));
@@ -31,6 +33,23 @@ export default function Login() {
         password
       );
       const user = userCredential.user;
+
+      // FireStore에서 사용자 정보 가져오기
+      const userDocRef = doc(db, "user", user.uid);
+      const userDoc = await getDoc(userDocRef);
+
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        // redux 상태 업데이트
+        dispatch(
+          login({
+            username: userData.username,
+            accountID: userData.accountID,
+            imageURL: userData.profileImage || null,
+          })
+        );
+      }
+
       navigate("/");
     } catch (e) {
       if (e instanceof FirebaseError) {
