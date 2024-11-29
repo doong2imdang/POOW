@@ -25,6 +25,9 @@ const SetSchedule: React.FC = () => {
 	const [scheduleData, setScheduleData] = useState<ScheduleData[]>([]);
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 	const [apiUrl, setApiUrl] = useState<string>("");
+	const [selectedSchedule, setSelectedSchedule] = useState<ScheduleData | null>(
+		null
+	);
 
 	useEffect(() => {
 		const date = new Date();
@@ -56,6 +59,11 @@ const SetSchedule: React.FC = () => {
 		setIsModalOpen(false);
 	};
 
+	const handleSelectSchedule = (schedule: ScheduleData) => {
+		setSelectedSchedule(schedule);
+		setIsModalOpen(false);
+	};
+
 	return (
 		<>
 			<Header set />
@@ -75,15 +83,39 @@ const SetSchedule: React.FC = () => {
 				</Section>
 				<Section>
 					<Label htmlFor="image">이미지</Label>
-					<Image></Image>
+					<Image
+						style={{
+							backgroundImage: selectedSchedule
+								? `url(${selectedSchedule.poster[0]})`
+								: "none",
+						}}
+					></Image>
 				</Section>
 				<Section>
 					<Label htmlFor="location">장소</Label>
-					<Input type="text" id="location" placeholder="장소를 입력해주세요." />
+					{/* <Input type="text" id="location" placeholder="장소를 입력해주세요." /> */}
+					<Input
+						type="text"
+						id="location"
+						placeholder="장소를 입력해주세요."
+						value={selectedSchedule?.fcltynm[0] || ""}
+						readOnly
+					/>
 				</Section>
 				<Section>
 					<Label htmlFor="date">관람날짜</Label>
-					<Input type="text" id="date" placeholder="관람날짜를 선택해주세요." />
+					{/* <Input type="text" id="date" placeholder="관람날짜를 선택해주세요." /> */}
+					<Input
+						type="text"
+						id="date"
+						placeholder="관람날짜를 선택해주세요."
+						value={
+							selectedSchedule
+								? `${selectedSchedule.prfpdfrom[0]} ~ ${selectedSchedule.prfpdto[0]}`
+								: ""
+						}
+						readOnly
+					/>
 					<BtnDate>
 						<img src={IconDate} alt="날짜 선택" />
 					</BtnDate>
@@ -97,11 +129,25 @@ const SetSchedule: React.FC = () => {
 					<Input type="text" id="cast" placeholder="출연진을 입력해주세요." />
 				</Section>
 			</SetScheduleContainer>
+			<SetScheduleContainer>
+				{/* 선택된 공연 정보 표시 */}
+				{selectedSchedule && (
+					<div>
+						<h3>{selectedSchedule.prfnm[0]}</h3>
+						<p>{selectedSchedule.fcltynm[0]}</p>
+						<p>
+							{selectedSchedule.prfpdfrom[0]} ~ {selectedSchedule.prfpdto[0]}
+						</p>
+					</div>
+				)}
+				{/* ... 나머지 코드 */}
+			</SetScheduleContainer>
 			{isModalOpen && (
 				<ScheduleModal
 					onClose={closeModal}
 					scheduleData={scheduleData}
 					apiUrl={apiUrl}
+					onSelect={handleSelectSchedule}
 				/>
 			)}
 		</>
@@ -178,6 +224,9 @@ const Image = styled.div`
 	height: 360px;
 	background-color: #f2f2f2;
 	border-radius: 10px;
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
 `;
 
 export default SetSchedule;

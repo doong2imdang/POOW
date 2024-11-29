@@ -35,6 +35,28 @@ app.get("/api/kopis", async (req, res) => {
 	}
 });
 
+app.get("/api/kopis/by-id/:mt20id", async (req, res) => {
+	const apiKey = process.env.REACT_APP_API_KEY;
+	const mt20id = req.params.mt20id;
+
+	const apiUrl = `http://www.kopis.or.kr/openApi/restful/pblprfr/${mt20id}?service=${apiKey}`;
+
+	try {
+		const response = await axios.get(apiUrl);
+		const parser = new xml2js.Parser();
+		parser.parseString(response.data, (err, result) => {
+			if (err) {
+				console.error("XML 파싱 오류:", err);
+				return res.status(500).send("Error parsing XML");
+			}
+			res.json(result);
+		});
+	} catch (error) {
+		console.error("데이터 가져오기 오류:", error);
+		res.status(500).send("Error fetching data");
+	}
+});
+
 // 서버 시작
 app.listen(PORT, () => {
 	console.log(`Server is running on http://localhost:${PORT}`);

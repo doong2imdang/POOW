@@ -6,9 +6,14 @@ interface ScheduleModalProps {
 	onClose: () => void;
 	scheduleData: ScheduleData[];
 	apiUrl: string;
+	onSelect: (selectedSchedule: ScheduleData) => void;
 }
 
-const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose, apiUrl }) => {
+const ScheduleModal: React.FC<ScheduleModalProps> = ({
+	onClose,
+	apiUrl,
+	onSelect,
+}) => {
 	const [scheduleData, setScheduleData] = useState<ScheduleData[]>([]);
 
 	useEffect(() => {
@@ -38,7 +43,7 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose, apiUrl }) => {
 					<NoResultMessage>일치하는 공연이 없습니다.</NoResultMessage>
 				) : (
 					scheduleData.map((schedule, index) => (
-						<ScheduleList key={index}>
+						<ScheduleList key={index} onClick={() => onSelect(schedule)}>
 							<img src={schedule.poster[0]} alt={schedule.prfnm[0]} />
 							<ScheduleInfo>
 								<ScheduleName>{schedule.prfnm[0]}</ScheduleName>
