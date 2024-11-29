@@ -1,59 +1,65 @@
 import React, { ChangeEvent, useEffect, useState } from "react";
 import styled from "styled-components";
-import Header from "../components/Header";
-import { ErrorMessage, ProfileUploadButtonStyle } from "./Signup";
-import Input from "../components/Input";
-import uploadProfile from "../assets/images/img-profile.svg";
-import imgButton from "../assets/images/icon-image-upload.svg";
+import { useNavigate } from "react-router-dom";
+import { useSelector, UseSelector } from "react-redux";
+import { RootState } from "../redux/store";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { auth, db, storage } from "../firebase";
-import { MainStyle } from "./Login";
-import { onAuthStateChanged, updateProfile } from "firebase/auth";
 import {
   collection,
   doc,
-  getDoc,
   getDocs,
-  query,
   updateDoc,
   where,
+  query,
 } from "firebase/firestore";
-import { useNavigate } from "react-router-dom";
+import { updateProfile } from "firebase/auth";
+
+import Header from "../components/Header";
+import Input from "../components/Input";
+import { ErrorMessage, ProfileUploadButtonStyle } from "./Signup";
+import { MainStyle } from "./Login";
+import { auth, db, storage } from "../firebase";
+
+import uploadProfile from "../assets/images/img-profile.svg";
+import imgButton from "../assets/images/icon-image-upload.svg";
 
 export default function EditProfile() {
   const navigate = useNavigate();
+  const {
+    username: initialUsername,
+    accountID: initialAccountID,
+    imageURL,
+  } = useSelector((state: RootState) => state.auth);
+
   const [disabled, setDisabled] = useState<boolean>(true);
-  const [username, setUsername] = useState<string>("");
-  const [accountID, setAccountID] = useState<string>("");
-  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [username, setUsername] = useState<string>(initialUsername);
+  const [accountID, setAccountID] = useState<string>(initialAccountID);
+  const [profileImage, setProfileImage] = useState<string | null>(imageURL);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [usernameError, setUsernameError] = useState<string>("");
   const [accountIDError, setAccountIDError] = useState<string>("");
-  const [currentAccountID, setCurrentAccountID] = useState<string>("");
 
+  // 버튼 disabled 상태 관리 로직 수정
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        const userDocRef = doc(db, "user", user.uid);
-        const userDoc = await getDoc(userDocRef);
-
-        if (userDoc.exists()) {
-          const userData = userDoc.data();
-          setUsername(userData.username || "");
-          setAccountID(userData.accountID || "");
-          setCurrentAccountID(userData.accountID || "");
-        }
-      }
-
-      if (user?.photoURL) {
-        setProfileImage(user.photoURL);
-      } else {
-        setProfileImage(null);
-      }
-    });
-
-    return () => unsubscribe();
-  }, []);
+    if (
+      usernameError || // 사용자 이름에 에러가 있을 때
+      accountIDError || // 계정 ID에 에러가 있을 때
+      !username || // 사용자 이름이 비어 있을 때
+      !accountID // 계정 ID가 비어 있을 때
+    ) {
+      setDisabled(true);
+    } else {
+      setDisabled(false);
+    }
+  }, [
+    username,
+    accountID,
+    usernameError,
+    accountIDError,
+    previewImage,
+    initialUsername,
+    initialAccountID,
+  ]);
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -65,34 +71,36 @@ export default function EditProfile() {
   };
 
   const handleSaveProfile = async () => {
-    if (auth.currentUser) {
-      try {
-        const userDocRef = doc(db, "user", auth.currentUser.uid);
-        await updateDoc(userDocRef, {
-          username: username,
-          accountID: accountID,
-        });
+    if (!auth.currentUser) return;
 
-        if (previewImage) {
-          const file =
-            document.querySelector<HTMLInputElement>("#profile-upload")
-              ?.files?.[0];
-          if (file) {
-            const storageRef = ref(
-              storage,
-              `profileImages/${auth.currentUser.uid}`
-            );
-            await uploadBytes(storageRef, file);
-            const downloadURL = await getDownloadURL(storageRef);
-            setProfileImage(downloadURL);
-            await updateProfile(auth.currentUser, { photoURL: downloadURL });
-            console.log("Profile image URL saved.");
-          }
+    try {
+      const userDocRef = doc(db, "user", auth.currentUser.uid);
+
+      // 사용자 정보 업데이트
+      await updateDoc(userDocRef, { username, accountID });
+
+      // 프로필 이미지 업로드 및 업데이트
+      if (previewImage) {
+        const file =
+          document.querySelector<HTMLInputElement>("#profile-upload")
+            ?.files?.[0];
+        if (file) {
+          const storageRef = ref(
+            storage,
+            `profileImages/${auth.currentUser.uid}`
+          );
+          await uploadBytes(storageRef, file);
+          const downloadURL = await getDownloadURL(storageRef);
+
+          setProfileImage(downloadURL);
+          await updateProfile(auth.currentUser, { photoURL: downloadURL });
+          await updateDoc(userDocRef, { profileImage: downloadURL });
         }
-        navigate("/profile");
-      } catch (error) {
-        console.error("Error saving profile: ", error);
       }
+
+      navigate("/profile");
+    } catch (e) {
+      console.error("Error saving profile", e);
     }
   };
 
@@ -121,17 +129,15 @@ export default function EditProfile() {
       setAccountIDError("영문, 숫자, 밑줄 및 마침표만 사용할 수 있습니다.");
       setDisabled(true);
       return;
-    } else {
-      setAccountIDError("");
     }
 
     // 자신의 계정 ID는 중복 검사에서 제외
-    if (value === currentAccountID) {
+    if (value === initialAccountID) {
       setAccountIDError("");
       if (!usernameError) {
         setDisabled(false);
+        return;
       }
-      return;
     }
 
     // FireStore에서 계정ID 중복 확인
