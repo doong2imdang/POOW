@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 import styled, { keyframes } from "styled-components";
 import SelectModal from "./SelectModal";
+import { useDispatch } from "react-redux";
+import { logout } from "../redux/authSlice";
+import { signOut } from "firebase/auth";
+import { auth } from "../firebase";
+import { useNavigate } from "react-router-dom";
 
 interface BottomSheetProps {
   text?: string;
@@ -11,6 +16,9 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
   text,
   toggleBottomSheet,
 }) => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState<string | null>(null);
   const [confirmText, setConfirmText] = useState<string>("");
@@ -36,8 +44,20 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
     toggleBottomSheet();
   };
 
-  const handleModalConfirm = () => {
+  const handleModalConfirm = async () => {
     console.log(`${modalType} confirmed`);
+
+    if (modalType === " 로그아웃") {
+      try {
+        await signOut(auth);
+        dispatch(logout());
+        console.log("사용자가 로그아웃되었습니다.");
+        navigate("/loginmethod");
+      } catch (e) {
+        console.error("로그아웃 실패", e);
+      }
+    }
+
     handleCloseModal();
   };
 

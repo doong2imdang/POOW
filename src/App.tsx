@@ -101,7 +101,7 @@ ${reset};
   }
 
   body {
-background: white;
+background: #f2f2f2;
   }
 
   a {
