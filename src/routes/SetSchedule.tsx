@@ -17,6 +17,8 @@ export interface ScheduleData {
 	genrenm: string[];
 	openrun: string[];
 	prfstate: string[];
+	prfcast: string[];
+	dtguidance: string[];
 }
 
 const SetSchedule: React.FC = () => {
@@ -59,9 +61,17 @@ const SetSchedule: React.FC = () => {
 		setIsModalOpen(false);
 	};
 
-	const handleSelectSchedule = (schedule: ScheduleData) => {
-		setSelectedSchedule(schedule);
-		setIsModalOpen(false);
+	const handleSelectSchedule = async (schedule: ScheduleData) => {
+		try {
+			const response = await axios.get(
+				`http://localhost:5000/api/kopis/by-id/${schedule.mt20id[0]}`
+			);
+			console.log("상세 정보 응답:", response.data);
+			setSelectedSchedule(response.data.dbs.db[0]);
+			setIsModalOpen(false);
+		} catch (error) {
+			console.error("상세 정보 가져오기 오류:", error);
+		}
 	};
 
 	return (
@@ -126,21 +136,15 @@ const SetSchedule: React.FC = () => {
 				</Section>
 				<Section>
 					<Label htmlFor="cast">출연진</Label>
-					<Input type="text" id="cast" placeholder="출연진을 입력해주세요." />
+					{/* <Input type="text" id="cast" placeholder="출연진을 입력해주세요." /> */}
+					<Input
+						type="text"
+						id="cast"
+						placeholder="출연진을 입력해주세요."
+						value={selectedSchedule ? `${selectedSchedule.prfcast[0]}` : ""}
+						readOnly
+					/>
 				</Section>
-			</SetScheduleContainer>
-			<SetScheduleContainer>
-				{/* 선택된 공연 정보 표시 */}
-				{selectedSchedule && (
-					<div>
-						<h3>{selectedSchedule.prfnm[0]}</h3>
-						<p>{selectedSchedule.fcltynm[0]}</p>
-						<p>
-							{selectedSchedule.prfpdfrom[0]} ~ {selectedSchedule.prfpdto[0]}
-						</p>
-					</div>
-				)}
-				{/* ... 나머지 코드 */}
 			</SetScheduleContainer>
 			{isModalOpen && (
 				<ScheduleModal
