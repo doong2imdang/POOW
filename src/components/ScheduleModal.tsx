@@ -6,9 +6,14 @@ interface ScheduleModalProps {
 	onClose: () => void;
 	scheduleData: ScheduleData[];
 	apiUrl: string;
+	onSelect: (selectedSchedule: ScheduleData) => void;
 }
 
-const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose, apiUrl }) => {
+const ScheduleModal: React.FC<ScheduleModalProps> = ({
+	onClose,
+	apiUrl,
+	onSelect,
+}) => {
 	const [scheduleData, setScheduleData] = useState<ScheduleData[]>([]);
 
 	useEffect(() => {
@@ -34,16 +39,20 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({ onClose, apiUrl }) => {
 	return (
 		<ModalOverlay onClick={onClose}>
 			<Container onClick={(e) => e.stopPropagation()}>
-				{scheduleData.map((schedule, index) => (
-					<ScheduleList key={index}>
-						<img src={schedule.poster[0]} alt={schedule.prfnm[0]} />
-						<ScheduleInfo>
-							<ScheduleName>{schedule.prfnm[0]}</ScheduleName>
-							<ScheduleHall>{schedule.fcltynm[0]}</ScheduleHall>
-							<ScheduleDate>{schedule.prfpdfrom[0]}</ScheduleDate>
-						</ScheduleInfo>
-					</ScheduleList>
-				))}
+				{scheduleData.length === 0 ? (
+					<NoResultMessage>일치하는 공연이 없습니다.</NoResultMessage>
+				) : (
+					scheduleData.map((schedule, index) => (
+						<ScheduleList key={index} onClick={() => onSelect(schedule)}>
+							<img src={schedule.poster[0]} alt={schedule.prfnm[0]} />
+							<ScheduleInfo>
+								<ScheduleName>{schedule.prfnm[0]}</ScheduleName>
+								<ScheduleHall>{schedule.fcltynm[0]}</ScheduleHall>
+								<ScheduleDate>{schedule.prfpdfrom[0]}</ScheduleDate>
+							</ScheduleInfo>
+						</ScheduleList>
+					))
+				)}
 			</Container>
 		</ModalOverlay>
 	);
@@ -116,6 +125,13 @@ const ScheduleHall = styled.p`
 const ScheduleDate = styled.p`
 	font-size: 10px;
 	color: var(--color-disabled);
+`;
+
+const NoResultMessage = styled.p`
+	text-align: center;
+	color: var(--color-dark);
+	font-size: 14px;
+	margin-top: 50px;
 `;
 
 export default ScheduleModal;

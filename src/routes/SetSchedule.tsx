@@ -17,6 +17,8 @@ export interface ScheduleData {
 	genrenm: string[];
 	openrun: string[];
 	prfstate: string[];
+	prfcast: string[];
+	dtguidance: string[];
 }
 
 const SetSchedule: React.FC = () => {
@@ -25,6 +27,9 @@ const SetSchedule: React.FC = () => {
 	const [scheduleData, setScheduleData] = useState<ScheduleData[]>([]);
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 	const [apiUrl, setApiUrl] = useState<string>("");
+	const [selectedSchedule, setSelectedSchedule] = useState<ScheduleData | null>(
+		null
+	);
 
 	useEffect(() => {
 		const date = new Date();
@@ -56,6 +61,19 @@ const SetSchedule: React.FC = () => {
 		setIsModalOpen(false);
 	};
 
+	const handleSelectSchedule = async (schedule: ScheduleData) => {
+		try {
+			const response = await axios.get(
+				`http://localhost:5000/api/kopis/by-id/${schedule.mt20id[0]}`
+			);
+			console.log("상세 정보 응답:", response.data);
+			setSelectedSchedule(response.data.dbs.db[0]);
+			setIsModalOpen(false);
+		} catch (error) {
+			console.error("상세 정보 가져오기 오류:", error);
+		}
+	};
+
 	return (
 		<>
 			<Header set />
@@ -75,15 +93,39 @@ const SetSchedule: React.FC = () => {
 				</Section>
 				<Section>
 					<Label htmlFor="image">이미지</Label>
-					<Image></Image>
+					<Image
+						style={{
+							backgroundImage: selectedSchedule
+								? `url(${selectedSchedule.poster[0]})`
+								: "none",
+						}}
+					></Image>
 				</Section>
 				<Section>
 					<Label htmlFor="location">장소</Label>
-					<Input type="text" id="location" placeholder="장소를 입력해주세요." />
+					{/* <Input type="text" id="location" placeholder="장소를 입력해주세요." /> */}
+					<Input
+						type="text"
+						id="location"
+						placeholder="장소를 입력해주세요."
+						value={selectedSchedule?.fcltynm[0] || ""}
+						readOnly
+					/>
 				</Section>
 				<Section>
 					<Label htmlFor="date">관람날짜</Label>
-					<Input type="text" id="date" placeholder="관람날짜를 선택해주세요." />
+					{/* <Input type="text" id="date" placeholder="관람날짜를 선택해주세요." /> */}
+					<Input
+						type="text"
+						id="date"
+						placeholder="관람날짜를 선택해주세요."
+						value={
+							selectedSchedule
+								? `${selectedSchedule.prfpdfrom[0]} ~ ${selectedSchedule.prfpdto[0]}`
+								: ""
+						}
+						readOnly
+					/>
 					<BtnDate>
 						<img src={IconDate} alt="날짜 선택" />
 					</BtnDate>
@@ -94,7 +136,14 @@ const SetSchedule: React.FC = () => {
 				</Section>
 				<Section>
 					<Label htmlFor="cast">출연진</Label>
-					<Input type="text" id="cast" placeholder="출연진을 입력해주세요." />
+					{/* <Input type="text" id="cast" placeholder="출연진을 입력해주세요." /> */}
+					<Input
+						type="text"
+						id="cast"
+						placeholder="출연진을 입력해주세요."
+						value={selectedSchedule ? `${selectedSchedule.prfcast[0]}` : ""}
+						readOnly
+					/>
 				</Section>
 			</SetScheduleContainer>
 			{isModalOpen && (
@@ -102,6 +151,7 @@ const SetSchedule: React.FC = () => {
 					onClose={closeModal}
 					scheduleData={scheduleData}
 					apiUrl={apiUrl}
+					onSelect={handleSelectSchedule}
 				/>
 			)}
 		</>
@@ -178,6 +228,9 @@ const Image = styled.div`
 	height: 360px;
 	background-color: #f2f2f2;
 	border-radius: 10px;
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
 `;
 
 export default SetSchedule;
