@@ -113,7 +113,6 @@ const SetSchedule: React.FC = () => {
 				</Section>
 				<Section>
 					<Label htmlFor="location">장소</Label>
-					{/* <Input type="text" id="location" placeholder="장소를 입력해주세요." /> */}
 					<Input
 						type="text"
 						id="location"
@@ -124,7 +123,6 @@ const SetSchedule: React.FC = () => {
 				</Section>
 				<Section>
 					<Label htmlFor="date">관람날짜</Label>
-					{/* <Input type="text" id="date" placeholder="관람날짜를 선택해주세요." /> */}
 					<Input
 						type="text"
 						id="date"
@@ -146,7 +144,6 @@ const SetSchedule: React.FC = () => {
 				</Section>
 				<Section>
 					<Label htmlFor="cast">출연진</Label>
-					{/* <Input type="text" id="cast" placeholder="출연진을 입력해주세요." /> */}
 					<Input
 						type="text"
 						id="cast"
