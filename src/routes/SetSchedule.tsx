@@ -86,6 +86,11 @@ const SetSchedule: React.FC = () => {
 						placeholder="관람명을 검색해주세요."
 						value={searchQuery}
 						onChange={(e) => setSearchQuery(e.target.value)}
+						onKeyDown={(e) => {
+							if (e.key === "Enter") {
+								handleSearch();
+							}
+						}}
 					/>
 					<BtnSearch onClick={handleSearch}>
 						<img src={IconSearch} alt="검색" />
