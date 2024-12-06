@@ -14,7 +14,7 @@ app.get("/api/kopis", async (req, res) => {
 	const todayDate = new Date().toISOString().slice(0, 10).replace(/-/g, "");
 	const searchQuery = req.query.shprfnm || "";
 
-	const apiUrl = `http://www.kopis.or.kr/openApi/restful/pblprfr?service=${apiKey}&stdate=${todayDate}&cpage=1&rows=10&prfstate=01&prfstate=02&shprfnm=${encodeURIComponent(
+	const apiUrl = `http://www.kopis.or.kr/openApi/restful/pblprfr?service=${apiKey}&stdate=${todayDate}&cpage=1&rows=50&prfstate=01&prfstate=02&shprfnm=${encodeURIComponent(
 		searchQuery
 	)}`;
 
