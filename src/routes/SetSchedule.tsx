@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Header from "../components/Header";
 import styled from "styled-components";
-import IconSearch from "../assets/images/icon-search-light.svg";
+import IconSearch from "../assets/images/icon-search-fill.svg";
 import IconDate from "../assets/images/icon-date.svg";
 import axios from "axios";
 import ScheduleModal from "../components/ScheduleModal";
