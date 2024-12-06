@@ -40,6 +40,11 @@ const SetSchedule: React.FC = () => {
 	}, []);
 
 	const handleSearch = () => {
+		if (searchQuery.trim() === "") {
+			alert("관람명을 입력해주세요.");
+			return;
+		}
+
 		const url = `http://localhost:5000/api/kopis?shprfnm=${encodeURIComponent(
 			searchQuery
 		)}`;
