@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Header from "../components/Header";
 import styled from "styled-components";
-import IconSearch from "../assets/images/icon-search-light.svg";
+import IconSearch from "../assets/images/icon-search-fill.svg";
 import IconDate from "../assets/images/icon-date.svg";
 import axios from "axios";
 import ScheduleModal from "../components/ScheduleModal";
@@ -40,6 +40,11 @@ const SetSchedule: React.FC = () => {
 	}, []);
 
 	const handleSearch = () => {
+		if (searchQuery.trim() === "") {
+			alert("관람명을 입력해주세요.");
+			return;
+		}
+
 		const url = `http://localhost:5000/api/kopis?shprfnm=${encodeURIComponent(
 			searchQuery
 		)}`;
@@ -86,6 +91,11 @@ const SetSchedule: React.FC = () => {
 						placeholder="관람명을 검색해주세요."
 						value={searchQuery}
 						onChange={(e) => setSearchQuery(e.target.value)}
+						onKeyDown={(e) => {
+							if (e.key === "Enter") {
+								handleSearch();
+							}
+						}}
 					/>
 					<BtnSearch onClick={handleSearch}>
 						<img src={IconSearch} alt="검색" />
@@ -103,7 +113,6 @@ const SetSchedule: React.FC = () => {
 				</Section>
 				<Section>
 					<Label htmlFor="location">장소</Label>
-					{/* <Input type="text" id="location" placeholder="장소를 입력해주세요." /> */}
 					<Input
 						type="text"
 						id="location"
@@ -114,7 +123,6 @@ const SetSchedule: React.FC = () => {
 				</Section>
 				<Section>
 					<Label htmlFor="date">관람날짜</Label>
-					{/* <Input type="text" id="date" placeholder="관람날짜를 선택해주세요." /> */}
 					<Input
 						type="text"
 						id="date"
@@ -136,7 +144,6 @@ const SetSchedule: React.FC = () => {
 				</Section>
 				<Section>
 					<Label htmlFor="cast">출연진</Label>
-					{/* <Input type="text" id="cast" placeholder="출연진을 입력해주세요." /> */}
 					<Input
 						type="text"
 						id="cast"
