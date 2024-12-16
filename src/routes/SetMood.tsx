@@ -32,6 +32,24 @@ export default function SetMood() {
               <img src={iconDelete} alt="" />
             </button>
           </FilePreview>
+          <FilePreview>
+            <img src="" alt="업로드된 파일" />
+            <button type="button">
+              <img src={iconDelete} alt="" />
+            </button>
+          </FilePreview>
+          <FilePreview>
+            <img src="" alt="업로드된 파일" />
+            <button type="button">
+              <img src={iconDelete} alt="" />
+            </button>
+          </FilePreview>
+          <FilePreview>
+            <img src="" alt="업로드된 파일" />
+            <button type="button">
+              <img src={iconDelete} alt="" />
+            </button>
+          </FilePreview>
         </UploadedFileContainer>
         <UploadButtonStyle htmlFor="upload-file">
           <img src={iconUploadFile} alt="파일업로드버튼" />
@@ -116,12 +134,18 @@ const TextAreaStyle = styled.textarea`
 const UploadedFileContainer = styled.div`
   display: flex;
   gap: 8px;
+  overflow-x: auto;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 const FilePreview = styled.div`
   position: relative;
   width: 168px;
   height: 126px;
+  flex: 0 0 auto;
   border: 1px solid var(--color-disabled);
   border-radius: 10px;
   overflow: hidden;
