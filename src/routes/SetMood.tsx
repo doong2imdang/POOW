@@ -7,6 +7,21 @@ import iconDelete from "../assets/images/icon-delete-white.svg";
 
 export default function SetMood() {
   const [disabled, setDisabled] = useState<boolean>(true);
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+
+  // 파일 업로드
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const files = Array.from(e.target.files);
+      setUploadedFiles((prev) => [...prev, ...files]);
+    }
+  };
+
+  // 파일 삭제
+  const handleDeleteFile = (index: number) => {
+    setUploadedFiles((prev) => prev.filter((_, i) => i !== index));
+  };
+
   return (
     <>
       <Header set buttonDisabled={disabled} />
@@ -26,34 +41,26 @@ export default function SetMood() {
         </CategoryLists>
         <TextAreaStyle></TextAreaStyle>
         <UploadedFileContainer>
-          <FilePreview>
-            <img src="" alt="업로드된 파일" />
-            <button type="button">
-              <img src={iconDelete} alt="" />
-            </button>
-          </FilePreview>
-          <FilePreview>
-            <img src="" alt="업로드된 파일" />
-            <button type="button">
-              <img src={iconDelete} alt="" />
-            </button>
-          </FilePreview>
-          <FilePreview>
-            <img src="" alt="업로드된 파일" />
-            <button type="button">
-              <img src={iconDelete} alt="" />
-            </button>
-          </FilePreview>
-          <FilePreview>
-            <img src="" alt="업로드된 파일" />
-            <button type="button">
-              <img src={iconDelete} alt="" />
-            </button>
-          </FilePreview>
+          {uploadedFiles.map((file, index) => (
+            <FilePreview key={index}>
+              <img
+                src={URL.createObjectURL(file)}
+                alt={`업로드된 파일 ${index + 1}`}
+              />
+              <button type="button" onClick={() => handleDeleteFile(index)}>
+                <img src={iconDelete} alt="삭제버튼" />
+              </button>
+            </FilePreview>
+          ))}
         </UploadedFileContainer>
         <UploadButtonStyle htmlFor="upload-file">
           <img src={iconUploadFile} alt="파일업로드버튼" />
-          <input type="file" id="upload-file" />
+          <input
+            type="file"
+            id="upload-file"
+            multiple
+            onChange={handleFileUpload}
+          />
         </UploadButtonStyle>
       </MainStyle>
     </>
