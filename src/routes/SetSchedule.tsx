@@ -30,6 +30,7 @@ const SetSchedule: React.FC = () => {
 	const [selectedSchedule, setSelectedSchedule] = useState<ScheduleData | null>(
 		null
 	);
+	const [selectedDate, setSelectedDate] = useState<string>("");
 
 	useEffect(() => {
 		const date = new Date();
@@ -124,19 +125,15 @@ const SetSchedule: React.FC = () => {
 				<Section>
 					<Label htmlFor="date">관람날짜</Label>
 					<Input
-						type="text"
+						type="date"
 						id="date"
 						placeholder="관람날짜를 선택해주세요."
-						value={
-							selectedSchedule
-								? `${selectedSchedule.prfpdfrom[0]} ~ ${selectedSchedule.prfpdto[0]}`
-								: ""
-						}
-						readOnly
+						value={selectedDate}
+						onChange={(e) => setSelectedDate(e.target.value)}
 					/>
-					<BtnDate>
+					{/* <BtnDate>
 						<img src={IconDate} alt="날짜 선택" />
-					</BtnDate>
+					</BtnDate> */}
 				</Section>
 				<Section>
 					<Label htmlFor="time">관람시간</Label>
@@ -194,6 +191,35 @@ const Input = styled.input`
 	width: 250px;
 	padding: 0 0 5px 0;
 	font-size: 14px;
+
+	&#date {
+		font: inherit;
+	}
+
+	&#date::-webkit-calendar-picker-indicator {
+		background: url(${IconDate});
+		background-size: 20px 18px;
+		left: 0;
+		top: 0;
+		z-index: 2;
+	}
+
+	/* &#date::-webkit-datetime-edit-text {
+		-webkit-appearance: none;
+		display: none;
+	}
+	&#date::-webkit-datetime-edit-month-field {
+		-webkit-appearance: none;
+		display: none;
+	}
+	&#date::-webkit-datetime-edit-day-field {
+		-webkit-appearance: none;
+		display: none;
+	}
+	&#date::-webkit-datetime-edit-year-field {
+		-webkit-appearance: none;
+		display: none;
+	} */
 `;
 
 const BtnSearch = styled.button`
