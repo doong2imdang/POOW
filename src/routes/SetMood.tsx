@@ -63,8 +63,6 @@ export default function SetMood() {
     }
   }, [uploadedFiles, textAreaValue, category, categoryList]);
 
-  console.log(category);
-
   return (
     <>
       <Header set buttonDisabled={disabled} />
@@ -78,7 +76,12 @@ export default function SetMood() {
             onKeyPress={handleCategoryKeyPress}
             onFocus={() => setIsFocused(true)}
           />
-          <button type="button">
+          <button
+            type="button"
+            onClick={() => {
+              setIsFocused(!isFocused);
+            }}
+          >
             <img src={iconDropdown} alt="화살표 버튼" />
           </button>
         </CategoryStyle>
