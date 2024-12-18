@@ -4,7 +4,6 @@ import styled, { css } from "styled-components";
 import iconDropdown from "../assets/images/icon-dropdown.svg";
 import iconUploadFile from "../assets/images/icon-image-upload.svg";
 import iconDelete from "../assets/images/icon-delete-white.svg";
-import { upload } from "@testing-library/user-event/dist/upload";
 
 export default function SetMood() {
   const [disabled, setDisabled] = useState<boolean>(true);
@@ -26,6 +25,12 @@ export default function SetMood() {
         setCategoryList((prev) => [...prev, category.trim()]);
       }
     }
+  };
+
+  // 카테고리 선택 시
+  const handleCategorySelect = (selectedCategory: string) => {
+    setCategory(selectedCategory);
+    setIsFocused(false);
   };
 
   // 파일 업로드
@@ -58,6 +63,8 @@ export default function SetMood() {
     }
   }, [uploadedFiles, textAreaValue, category, categoryList]);
 
+  console.log(category);
+
   return (
     <>
       <Header set buttonDisabled={disabled} />
@@ -70,18 +77,21 @@ export default function SetMood() {
             onChange={handleCategoryChange}
             onKeyPress={handleCategoryKeyPress}
             onFocus={() => setIsFocused(true)}
-            onBlur={() => setIsFocused(false)}
           />
           <button type="button">
             <img src={iconDropdown} alt="화살표 버튼" />
           </button>
         </CategoryStyle>
         {isFocused && (
-          <CategoryLists>
+          <CategoryLists onMouseDown={(e) => e.preventDefault()}>
             {categoryList.length === 0 ? (
               <EmptyMessage>카테고리를 추가하세요.</EmptyMessage>
             ) : (
-              categoryList.map((item, index) => <li key={index}>{item}</li>)
+              categoryList.map((item, index) => (
+                <li key={index} onClick={() => handleCategorySelect(item)}>
+                  {item}
+                </li>
+              ))
             )}
           </CategoryLists>
         )}
