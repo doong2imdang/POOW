@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Header from "../components/Header";
 import styled, { css } from "styled-components";
 import iconDropdown from "../assets/images/icon-dropdown.svg";
@@ -12,6 +12,24 @@ export default function SetMood() {
   const [isFocused, setIsFocused] = useState<boolean>(false);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [textAreaValue, setTextAreaValue] = useState<string>("");
+  const categoryListRef = useRef<HTMLUListElement>(null);
+
+  // 화면 바깥 클릭 감지
+  useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (
+        categoryListRef.current &&
+        !categoryListRef.current.contains(e.target as Node)
+      ) {
+        setIsFocused(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, []);
 
   // 카테고리 입력 시
   const handleCategoryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -74,7 +92,10 @@ export default function SetMood() {
             value={category}
             onChange={handleCategoryChange}
             onKeyPress={handleCategoryKeyPress}
-            onFocus={() => setIsFocused(true)}
+            onFocus={() => {
+              setCategory("");
+              setIsFocused(true);
+            }}
           />
           <button
             type="button"
@@ -86,7 +107,10 @@ export default function SetMood() {
           </button>
         </CategoryStyle>
         {isFocused && (
-          <CategoryLists onMouseDown={(e) => e.preventDefault()}>
+          <CategoryLists
+            ref={categoryListRef}
+            onMouseDown={(e) => e.preventDefault()}
+          >
             {categoryList.length === 0 ? (
               <EmptyMessage>카테고리를 추가하세요.</EmptyMessage>
             ) : (
