@@ -130,6 +130,7 @@ const SetSchedule: React.FC = () => {
 						placeholder="관람날짜를 선택해주세요."
 						value={selectedDate}
 						onChange={(e) => setSelectedDate(e.target.value)}
+						required
 					/>
 					{/* <BtnDate>
 						<img src={IconDate} alt="날짜 선택" />
@@ -186,6 +187,7 @@ const Label = styled.label`
 `;
 
 const Input = styled.input`
+	position: relative;
 	border: none;
 	border-bottom: 1px solid var(--color-disabled);
 	width: 250px;
@@ -204,22 +206,25 @@ const Input = styled.input`
 		z-index: 2;
 	}
 
-	/* &#date::-webkit-datetime-edit-text {
-		-webkit-appearance: none;
-		display: none;
-	}
-	&#date::-webkit-datetime-edit-month-field {
-		-webkit-appearance: none;
-		display: none;
-	}
-	&#date::-webkit-datetime-edit-day-field {
-		-webkit-appearance: none;
-		display: none;
-	}
+	/* &#date::-webkit-datetime-edit-text,
+	&#date::-webkit-datetime-edit-month-field,
+	&#date::-webkit-datetime-edit-day-field,
 	&#date::-webkit-datetime-edit-year-field {
 		-webkit-appearance: none;
 		display: none;
 	} */
+	&#date::before {
+		position: absolute;
+		content: attr(placeholder);
+		width: 100%;
+		height: 100%;
+		background-color: white;
+		color: #757575;
+	}
+
+	&#date:valid::before {
+		display: none;
+	}
 `;
 
 const BtnSearch = styled.button`
@@ -239,22 +244,22 @@ const BtnSearch = styled.button`
 	}
 `;
 
-const BtnDate = styled.button`
-	background: none;
-	border: none;
-	top: -1px;
-	left: 300px;
-	cursor: pointer;
-	position: absolute;
-	z-index: 2;
-	width: 15px;
-	height: 17px;
+// const BtnDate = styled.button`
+// 	background: none;
+// 	border: none;
+// 	top: -1px;
+// 	left: 300px;
+// 	cursor: pointer;
+// 	position: absolute;
+// 	z-index: 2;
+// 	width: 15px;
+// 	height: 17px;
 
-	img {
-		width: 15px;
-		height: 17px;
-	}
-`;
+// 	img {
+// 		width: 15px;
+// 		height: 17px;
+// 	}
+// `;
 
 const Image = styled.div`
 	width: 250px;
