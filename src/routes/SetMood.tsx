@@ -227,7 +227,15 @@ const UploadedFileContainer = styled.div`
   overflow-x: auto;
 
   &::-webkit-scrollbar {
-    display: none;
+    background-color: #fff;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--color-main);
+    height: 13px;
+    border: 4px solid #fff;
+    border-radius: 10px;
+    cursor: pointer;
   }
 `;
 
