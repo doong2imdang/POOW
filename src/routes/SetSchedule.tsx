@@ -30,6 +30,7 @@ const SetSchedule: React.FC = () => {
 	const [selectedSchedule, setSelectedSchedule] = useState<ScheduleData | null>(
 		null
 	);
+	const [selectedDate, setSelectedDate] = useState<string>("");
 
 	useEffect(() => {
 		const date = new Date();
@@ -124,19 +125,16 @@ const SetSchedule: React.FC = () => {
 				<Section>
 					<Label htmlFor="date">관람날짜</Label>
 					<Input
-						type="text"
+						type="date"
 						id="date"
 						placeholder="관람날짜를 선택해주세요."
-						value={
-							selectedSchedule
-								? `${selectedSchedule.prfpdfrom[0]} ~ ${selectedSchedule.prfpdto[0]}`
-								: ""
-						}
-						readOnly
+						value={selectedDate}
+						onChange={(e) => setSelectedDate(e.target.value)}
+						required
 					/>
-					<BtnDate>
+					{/* <BtnDate>
 						<img src={IconDate} alt="날짜 선택" />
-					</BtnDate>
+					</BtnDate> */}
 				</Section>
 				<Section>
 					<Label htmlFor="time">관람시간</Label>
@@ -189,11 +187,44 @@ const Label = styled.label`
 `;
 
 const Input = styled.input`
+	position: relative;
 	border: none;
 	border-bottom: 1px solid var(--color-disabled);
 	width: 250px;
 	padding: 0 0 5px 0;
 	font-size: 14px;
+
+	&#date {
+		font: inherit;
+	}
+
+	&#date::-webkit-calendar-picker-indicator {
+		background: url(${IconDate});
+		background-size: 20px 18px;
+		left: 0;
+		top: 0;
+		z-index: 2;
+	}
+
+	/* &#date::-webkit-datetime-edit-text,
+	&#date::-webkit-datetime-edit-month-field,
+	&#date::-webkit-datetime-edit-day-field,
+	&#date::-webkit-datetime-edit-year-field {
+		-webkit-appearance: none;
+		display: none;
+	} */
+	&#date::before {
+		position: absolute;
+		content: attr(placeholder);
+		width: 100%;
+		height: 100%;
+		background-color: white;
+		color: #757575;
+	}
+
+	&#date:valid::before {
+		display: none;
+	}
 `;
 
 const BtnSearch = styled.button`
@@ -213,22 +244,22 @@ const BtnSearch = styled.button`
 	}
 `;
 
-const BtnDate = styled.button`
-	background: none;
-	border: none;
-	top: -1px;
-	left: 300px;
-	cursor: pointer;
-	position: absolute;
-	z-index: 2;
-	width: 15px;
-	height: 17px;
+// const BtnDate = styled.button`
+// 	background: none;
+// 	border: none;
+// 	top: -1px;
+// 	left: 300px;
+// 	cursor: pointer;
+// 	position: absolute;
+// 	z-index: 2;
+// 	width: 15px;
+// 	height: 17px;
 
-	img {
-		width: 15px;
-		height: 17px;
-	}
-`;
+// 	img {
+// 		width: 15px;
+// 		height: 17px;
+// 	}
+// `;
 
 const Image = styled.div`
 	width: 250px;
