@@ -22,6 +22,7 @@ export interface ScheduleData {
 }
 
 const SetSchedule: React.FC = () => {
+	const [isFormValid, setIsFormValid] = useState<boolean>(false);
 	const [searchQuery, setSearchQuery] = useState<string>("");
 	const [todayDate, setTodayDate] = useState<string>("");
 	const [scheduleData, setScheduleData] = useState<ScheduleData[]>([]);
@@ -31,6 +32,7 @@ const SetSchedule: React.FC = () => {
 		null
 	);
 	const [selectedDate, setSelectedDate] = useState<string>("");
+	const [showTime, setShowTime] = useState<string>("");
 
 	useEffect(() => {
 		const date = new Date();
@@ -39,6 +41,16 @@ const SetSchedule: React.FC = () => {
 		const day = String(date.getDate()).padStart(2, "0");
 		setTodayDate(`${year}${month}${day}`);
 	}, []);
+
+	useEffect(() => {
+		const isValid =
+			searchQuery.trim() !== "" &&
+			selectedSchedule !== null &&
+			selectedDate !== "" &&
+			Boolean(showTime.match(/^(?:[01]\d|2[0-3]):[0-5]\d$/));
+
+		setIsFormValid(isValid);
+	}, [searchQuery, selectedSchedule, selectedDate, showTime]);
 
 	const handleSearch = () => {
 		if (searchQuery.trim() === "") {
@@ -79,10 +91,14 @@ const SetSchedule: React.FC = () => {
 			console.error("상세 정보 가져오기 오류:", error);
 		}
 	};
+	const handleSave = () => {
+		// 나중에 저장 구현해야함
+		alert("일정이 저장되었습니다.");
+	};
 
 	return (
 		<>
-			<Header set />
+			<Header set buttonDisabled={!isFormValid} onSave={handleSave} />
 			<SetScheduleContainer>
 				<Section>
 					<Label htmlFor="name">관람명</Label>
@@ -138,7 +154,13 @@ const SetSchedule: React.FC = () => {
 				</Section>
 				<Section>
 					<Label htmlFor="time">관람시간</Label>
-					<Input type="text" id="time" placeholder="관람시간을 입력해주세요." />
+					<Input
+						type="text"
+						id="time"
+						value={showTime}
+						placeholder="관람시간을 입력해주세요."
+						onChange={(e) => setShowTime(e.target.value)}
+					/>
 				</Section>
 				<Section>
 					<Label htmlFor="cast">출연진</Label>
