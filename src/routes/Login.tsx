@@ -46,6 +46,7 @@ export default function Login() {
             username: userData.username,
             accountID: userData.accountID,
             imageURL: userData.profileImage || null,
+            uid: user.uid,
           })
         );
       }
