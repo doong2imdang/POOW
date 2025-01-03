@@ -21,6 +21,7 @@ export default function useAuthListener() {
                 username: userData.username,
                 accountID: userData.accountID,
                 imageURL: userData.profileImage || null,
+                uid: user.uid,
               })
             );
           }
