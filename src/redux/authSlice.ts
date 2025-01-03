@@ -5,6 +5,7 @@ interface AuthState {
   username: string;
   accountID: string;
   imageURL: string | null;
+  uid: string | null;
 }
 
 const initialState: AuthState = {
@@ -12,6 +13,7 @@ const initialState: AuthState = {
   username: "",
   accountID: "",
   imageURL: null,
+  uid: null,
 };
 
 const authSlice = createSlice({
@@ -24,18 +26,21 @@ const authSlice = createSlice({
         username: string;
         accountID: string;
         imageURL: string | null;
+        uid: string;
       }>
     ) {
       state.isLoggedIn = true;
       state.username = action.payload.username;
       state.accountID = action.payload.accountID;
       state.imageURL = action.payload.imageURL;
+      state.uid = action.payload.uid;
     },
     logout(state) {
       state.isLoggedIn = false;
       state.username = "";
       state.accountID = "";
       state.imageURL = null;
+      state.uid = null;
     },
   },
 });

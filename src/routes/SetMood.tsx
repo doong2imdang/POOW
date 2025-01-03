@@ -1,9 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Header from "../components/Header";
 import styled, { css } from "styled-components";
 import iconDropdown from "../assets/images/icon-dropdown.svg";
 import iconUploadFile from "../assets/images/icon-image-upload.svg";
 import iconDelete from "../assets/images/icon-delete-white.svg";
+import { useSelector } from "react-redux";
+import { RootState } from "../redux/store";
+import { addDoc, collection, doc } from "firebase/firestore";
+import { db } from "../firebase";
+import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import { useNavigate } from "react-router-dom";
 
 export default function SetMood() {
   const [disabled, setDisabled] = useState<boolean>(true);
@@ -12,6 +18,26 @@ export default function SetMood() {
   const [isFocused, setIsFocused] = useState<boolean>(false);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [textAreaValue, setTextAreaValue] = useState<string>("");
+  const categoryListRef = useRef<HTMLUListElement>(null);
+  const userId = useSelector((state: RootState) => state.auth.uid);
+  const navigate = useNavigate();
+
+  // 화면 바깥 클릭 감지
+  useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (
+        categoryListRef.current &&
+        !categoryListRef.current.contains(e.target as Node)
+      ) {
+        setIsFocused(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, []);
 
   // 카테고리 입력 시
   const handleCategoryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,9 +89,64 @@ export default function SetMood() {
     }
   }, [uploadedFiles, textAreaValue, category, categoryList]);
 
+  // 저장하기
+  const handleSave = async () => {
+    console.log(category, uploadedFiles, textAreaValue);
+
+    if (!userId) {
+      console.error("사용자가 로그인되지 않았습니다.");
+      return;
+    }
+
+    if (!category.trim()) {
+      console.error("카테고리 값이 유효하지 않습니다.");
+      return;
+    }
+
+    try {
+      const storage = getStorage();
+      const userRef = doc(db, "user", userId);
+
+      // mood 컬렉션 내부에 category 이름으로 된 서브 컬렉션 참조
+      const categoryCollectionRef = collection(
+        userRef,
+        "mood",
+        category,
+        "documents"
+      );
+
+      // 업로드된 파일의 URL을 저장할 배열
+      const fileURLs: string[] = [];
+
+      for (const file of uploadedFiles) {
+        // Storage에 파일 업로드
+        const fileRef = ref(storage, `mood/${userId}/${category}/${file.name}`);
+        await uploadBytes(fileRef, file);
+
+        // 업로드된 파일의 URL 가져오기
+        const fileURL = await getDownloadURL(fileRef);
+        fileURLs.push(fileURL);
+      }
+
+      // Firestore에 한 번만 문서 저장
+      const data = {
+        fileURLs,
+        textAreaValue,
+        createdAt: new Date(),
+      };
+
+      // category 이름의 문서에 저장
+      const newDocRef = await addDoc(categoryCollectionRef, data);
+      console.log("저장완료:", newDocRef.id);
+      navigate("/");
+    } catch (e) {
+      console.error("저장 중 오류 발생", e);
+    }
+  };
+
   return (
     <>
-      <Header set buttonDisabled={disabled} />
+      <Header set buttonDisabled={disabled} onSave={handleSave} />
       <MainStyle>
         <CategoryStyle $isFocused={isFocused}>
           <CategoryInput
@@ -74,7 +155,10 @@ export default function SetMood() {
             value={category}
             onChange={handleCategoryChange}
             onKeyPress={handleCategoryKeyPress}
-            onFocus={() => setIsFocused(true)}
+            onFocus={() => {
+              setCategory("");
+              setIsFocused(true);
+            }}
           />
           <button
             type="button"
@@ -86,7 +170,10 @@ export default function SetMood() {
           </button>
         </CategoryStyle>
         {isFocused && (
-          <CategoryLists onMouseDown={(e) => e.preventDefault()}>
+          <CategoryLists
+            ref={categoryListRef}
+            onMouseDown={(e) => e.preventDefault()}
+          >
             {categoryList.length === 0 ? (
               <EmptyMessage>카테고리를 추가하세요.</EmptyMessage>
             ) : (
@@ -184,6 +271,7 @@ const CategoryLists = styled.ul`
   overflow: hidden;
   color: var(--color-dark);
   position: absolute;
+  z-index: 100;
 
   li {
     padding: 7px 0;
@@ -227,7 +315,15 @@ const UploadedFileContainer = styled.div`
   overflow-x: auto;
 
   &::-webkit-scrollbar {
-    display: none;
+    background-color: #fff;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--color-main);
+    height: 13px;
+    border: 4px solid #fff;
+    border-radius: 10px;
+    cursor: pointer;
   }
 `;
 
