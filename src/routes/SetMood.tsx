@@ -138,7 +138,7 @@ export default function SetMood() {
       // category 이름의 문서에 저장
       const newDocRef = await addDoc(categoryCollectionRef, data);
       console.log("저장완료:", newDocRef.id);
-      navigate("/");
+      navigate("/mood");
     } catch (e) {
       console.error("저장 중 오류 발생", e);
     }
