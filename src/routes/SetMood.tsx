@@ -6,7 +6,7 @@ import iconUploadFile from "../assets/images/icon-image-upload.svg";
 import iconDelete from "../assets/images/icon-delete-white.svg";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
-import { addDoc, collection, doc } from "firebase/firestore";
+import { addDoc, collection, doc, getDocs, setDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { useNavigate } from "react-router-dom";
@@ -21,6 +21,31 @@ export default function SetMood() {
   const categoryListRef = useRef<HTMLUListElement>(null);
   const userId = useSelector((state: RootState) => state.auth.uid);
   const navigate = useNavigate();
+
+  // 초기 카테고리 목록
+  useEffect(() => {
+    const fetchCategories = async () => {
+      if (!userId) return;
+
+      try {
+        const categoryCollectionRef = collection(db, "user", userId, "mood");
+
+        const querySnapshot = await getDocs(categoryCollectionRef);
+
+        if (querySnapshot.empty) {
+          console.log("해당 카테고리 문서가 존재하지 않음");
+        } else {
+          const categories = querySnapshot.docs.map((doc) => doc.data().name);
+          setCategoryList(categories);
+        }
+      } catch (e) {
+        console.error("카테고리 로드 중 오류 발생", e);
+      }
+    };
+    fetchCategories();
+  }, [userId]);
+
+  // console.log("categoryList", categoryList);
 
   // 화면 바깥 클릭 감지
   useEffect(() => {
@@ -107,13 +132,14 @@ export default function SetMood() {
       const storage = getStorage();
       const userRef = doc(db, "user", userId);
 
-      // mood 컬렉션 내부에 category 이름으로 된 서브 컬렉션 참조
-      const categoryCollectionRef = collection(
-        userRef,
-        "mood",
-        category,
-        "documents"
-      );
+      // 카테고리 문서 참조 생성
+      const categoryDocRef = doc(userRef, "mood", category);
+
+      // category 문서가 존재하지 않으면 생성
+      await setDoc(categoryDocRef, { name: category }, { merge: true });
+
+      // 카테고리 문서의 documents 컬렉션 참조
+      const documentsCollectionRef = collection(categoryDocRef, "documents");
 
       // 업로드된 파일의 URL을 저장할 배열
       const fileURLs: string[] = [];
@@ -135,8 +161,8 @@ export default function SetMood() {
         createdAt: new Date(),
       };
 
-      // category 이름의 문서에 저장
-      const newDocRef = await addDoc(categoryCollectionRef, data);
+      // documents 컬렉션에 새 문서 추가
+      const newDocRef = await addDoc(documentsCollectionRef, data);
       console.log("저장완료:", newDocRef.id);
       navigate("/mood");
     } catch (e) {
@@ -177,9 +203,9 @@ export default function SetMood() {
             {categoryList.length === 0 ? (
               <EmptyMessage>카테고리를 추가하세요.</EmptyMessage>
             ) : (
-              categoryList.map((item, index) => (
-                <li key={index} onClick={() => handleCategorySelect(item)}>
-                  {item}
+              categoryList.map((category, index) => (
+                <li key={index} onClick={() => handleCategorySelect(category)}>
+                  {category}
                 </li>
               ))
             )}
