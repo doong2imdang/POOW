@@ -1,13 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
+import styled from "styled-components";
 import Header from "../components/Header";
 import iconDropdown from "../assets/images/icon-dropdown.svg";
+import iconSMoreVertical from "../assets/images/s-icon-more-vertical.svg";
 import {
-  MainStyle,
   CategoryStyle,
   CategoryInput,
   CategoryLists,
   EmptyMessage,
 } from "./SetMood";
+import { MoodList, MyMoodStyle } from "../components/MyMood";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 import { collection, getDocs } from "firebase/firestore";
@@ -83,44 +85,102 @@ export default function Home() {
     <>
       <Header main />
       <MainStyle>
-        <CategoryStyle $isFocused={isFocused}>
-          <CategoryInput
-            type="text"
-            placeholder="카테고리 입력"
-            value={category}
-            onChange={handleCategoryChange}
-            onKeyPress={handleCategoryKeyPress}
-            onFocus={() => {
-              setCategory("");
-              setIsFocused(true);
-            }}
-          />
-          <button
-            type="button"
-            onClick={() => {
-              setIsFocused(!isFocused);
-            }}
-          >
-            <img src={iconDropdown} alt="화살표 버튼" />
-          </button>
-        </CategoryStyle>
-        {isFocused && (
-          <CategoryLists
-            ref={categoryListRef}
-            onMouseDown={(e) => e.preventDefault()}
-          >
-            {categoryList.length === 0 ? (
-              <EmptyMessage>카테고리를 추가하세요.</EmptyMessage>
-            ) : (
-              categoryList.map((category, index) => (
-                <li key={index} onClick={() => handleCategorySelect(category)}>
-                  {category}
-                </li>
-              ))
-            )}
-          </CategoryLists>
-        )}
+        <CategoryContainer>
+          <CategoryStyle $isFocused={isFocused}>
+            <CategoryInput
+              type="text"
+              placeholder="카테고리 입력"
+              value={category}
+              onChange={handleCategoryChange}
+              onKeyPress={handleCategoryKeyPress}
+              onFocus={() => {
+                setCategory("");
+                setIsFocused(true);
+              }}
+            />
+            <button
+              type="button"
+              onClick={() => {
+                setIsFocused(!isFocused);
+              }}
+            >
+              <img src={iconDropdown} alt="화살표 버튼" />
+            </button>
+          </CategoryStyle>
+          {isFocused && (
+            <CategoryLists
+              ref={categoryListRef}
+              onMouseDown={(e) => e.preventDefault()}
+            >
+              {categoryList.length === 0 ? (
+                <EmptyMessage>카테고리를 추가하세요.</EmptyMessage>
+              ) : (
+                categoryList.map((category, index) => (
+                  <li
+                    key={index}
+                    onClick={() => handleCategorySelect(category)}
+                  >
+                    {category}
+                  </li>
+                ))
+              )}
+            </CategoryLists>
+          )}
+        </CategoryContainer>
+        <MyMoodStyle>
+          <MoodList>
+            <li>
+              <button type="button">
+                <img src={iconSMoreVertical} alt="바텀시트 열기 버튼" />
+              </button>
+              <span>
+                국회는 의장 1인과 부의장 2인을 선출한다. 모든 국민은 신체의
+                자유를 가진다. 누구든지 법률에 의하지 아니하고는
+                체포·구속·압수·수색 또는 심문을 받지 아니하며, 법률과 적법한
+                절차에 의하지 아니하고는 처벌·보안처분 또는 강제노역을 받지
+                아니한다.
+              </span>
+              <img src="" alt="무드 이미지" />
+              <p>
+                <span>2024년</span>
+                <span>10월</span>
+                <span>4일</span>
+              </p>
+            </li>
+            <li>
+              <button type="button">
+                <img src={iconSMoreVertical} alt="바텀시트 열기 버튼" />
+              </button>
+              <span>
+                국회는 의장 1인과 부의장 2인을 선출한다. 모든 국민은 신체의
+                자유를 가진다. 누구든지 법률에 의하지 아니하고는
+                체포·구속·압수·수색 또는 심문을 받지 아니하며, 법률과 적법한
+                절차에 의하지 아니하고는 처벌·보안처분 또는 강제노역을 받지
+                아니한다.
+              </span>
+              <img src="" alt="무드 이미지" />
+              <p>
+                <span>2024년</span>
+                <span>10월</span>
+                <span>4일</span>
+              </p>
+            </li>
+          </MoodList>
+        </MyMoodStyle>
       </MainStyle>
     </>
   );
 }
+
+const MainStyle = styled.main`
+  height: calc(100% - 60px);
+  overflow-x: hidden;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+`;
+
+const CategoryContainer = styled.div`
+  padding: 19px 21px 0 21px;
+`;
