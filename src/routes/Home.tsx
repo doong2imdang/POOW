@@ -12,7 +12,7 @@ import {
 import { MoodList, MyMoodStyle } from "../components/MyMood";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, doc, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
 
 export default function Home() {
@@ -20,16 +20,17 @@ export default function Home() {
   const [categoryList, setCategoryList] = useState<string[]>([]);
   const [isFocused, setIsFocused] = useState<boolean>(false);
   const categoryListRef = useRef<HTMLUListElement>(null);
+  const [moods, setMoods] = useState<any[]>([]);
+  const [filteredMoods, setFilteredMoods] = useState<any[]>([]);
   const userId = useSelector((state: RootState) => state.auth.uid);
 
-  // 초기 카테고리 목록
+  // 초기 카테고리 목록 및 무드 가져오기기
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchCategoriesAndMoods = async () => {
       if (!userId) return;
 
       try {
         const categoryCollectionRef = collection(db, "user", userId, "mood");
-
         const querySnapshot = await getDocs(categoryCollectionRef);
 
         if (querySnapshot.empty) {
@@ -37,12 +38,33 @@ export default function Home() {
         } else {
           const categories = querySnapshot.docs.map((doc) => doc.data().name);
           setCategoryList(categories);
+
+          // 각 카테고리의 documents 컬렉션에서 무드 데이터 가져오기
+          let allMoods: any[] = [];
+          for (const categoryId of categories) {
+            const documentsCollectionRef = collection(
+              db,
+              "user",
+              userId,
+              "mood",
+              categoryId,
+              "documents"
+            );
+            const documentsSnapshot = await getDocs(documentsCollectionRef);
+            const moodsData = documentsSnapshot.docs.map((doc) => ({
+              ...doc.data(),
+              category: categoryId,
+            }));
+            allMoods = [...allMoods, ...moodsData];
+          }
+          setMoods(allMoods);
+          console.log(moods);
         }
       } catch (e) {
         console.error("카테고리 로드 중 오류 발생", e);
       }
     };
-    fetchCategories();
+    fetchCategoriesAndMoods();
   }, [userId]);
 
   // 화면 바깥 클릭 감지
@@ -81,6 +103,7 @@ export default function Home() {
     setCategory(selectedCategory);
     setIsFocused(false);
   };
+
   return (
     <>
       <Header main />
