@@ -166,25 +166,31 @@ export default function Home() {
         </CategoryContainer>
         <MyMoodStyle>
           <MoodList>
-            {filteredMoods.map((mood, index) => (
-              <li key={index}>
-                <button type="button">
-                  <img src={iconSMoreVertical} alt="바텀시트 열기 버튼" />
-                </button>
-                <span>{mood.textAreaValue}</span>
-                {mood.fileURLs.length > 0 ? (
-                  <img src={mood.fileURLs[0]} alt="무드 이미지" />
-                ) : (
-                  ""
-                )}
+            {filteredMoods.map((mood, index) => {
+              const date = mood.createdAt.toDate();
+              const formattedDate = date.toLocaleDateString("ko-KR", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              });
+              return (
+                <li key={index}>
+                  <button type="button">
+                    <img src={iconSMoreVertical} alt="바텀시트 열기 버튼" />
+                  </button>
+                  <span>{mood.textAreaValue}</span>
+                  {mood.fileURLs.length > 0 ? (
+                    <img src={mood.fileURLs[0]} alt="무드 이미지" />
+                  ) : (
+                    ""
+                  )}
 
-                <p>
-                  <span>2024년</span>
-                  <span>10월</span>
-                  <span>4일</span>
-                </p>
-              </li>
-            ))}
+                  <p>
+                    <span>{formattedDate}</span>
+                  </p>
+                </li>
+              );
+            })}
           </MoodList>
         </MyMoodStyle>
       </MainStyle>
