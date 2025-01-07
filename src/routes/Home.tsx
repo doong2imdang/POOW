@@ -58,7 +58,7 @@ export default function Home() {
             allMoods = [...allMoods, ...moodsData];
           }
           setMoods(allMoods);
-          console.log(moods);
+          console.log(moods, "moods");
         }
       } catch (e) {
         console.error("카테고리 로드 중 오류 발생", e);
@@ -66,6 +66,20 @@ export default function Home() {
     };
     fetchCategoriesAndMoods();
   }, [userId]);
+
+  console.log(category);
+
+  // 카테고리가 변경될 때 무드 필터링
+  useEffect(() => {
+    if (category) {
+      const filtered = moods.filter((mood) => mood.category === category);
+      setFilteredMoods(filtered);
+    } else {
+      setFilteredMoods(moods);
+    }
+
+    console.log(filteredMoods, "filteredMoods");
+  }, [category, moods]);
 
   // 화면 바깥 클릭 감지
   useEffect(() => {
@@ -152,42 +166,25 @@ export default function Home() {
         </CategoryContainer>
         <MyMoodStyle>
           <MoodList>
-            <li>
-              <button type="button">
-                <img src={iconSMoreVertical} alt="바텀시트 열기 버튼" />
-              </button>
-              <span>
-                국회는 의장 1인과 부의장 2인을 선출한다. 모든 국민은 신체의
-                자유를 가진다. 누구든지 법률에 의하지 아니하고는
-                체포·구속·압수·수색 또는 심문을 받지 아니하며, 법률과 적법한
-                절차에 의하지 아니하고는 처벌·보안처분 또는 강제노역을 받지
-                아니한다.
-              </span>
-              <img src="" alt="무드 이미지" />
-              <p>
-                <span>2024년</span>
-                <span>10월</span>
-                <span>4일</span>
-              </p>
-            </li>
-            <li>
-              <button type="button">
-                <img src={iconSMoreVertical} alt="바텀시트 열기 버튼" />
-              </button>
-              <span>
-                국회는 의장 1인과 부의장 2인을 선출한다. 모든 국민은 신체의
-                자유를 가진다. 누구든지 법률에 의하지 아니하고는
-                체포·구속·압수·수색 또는 심문을 받지 아니하며, 법률과 적법한
-                절차에 의하지 아니하고는 처벌·보안처분 또는 강제노역을 받지
-                아니한다.
-              </span>
-              <img src="" alt="무드 이미지" />
-              <p>
-                <span>2024년</span>
-                <span>10월</span>
-                <span>4일</span>
-              </p>
-            </li>
+            {filteredMoods.map((mood, index) => (
+              <li key={index}>
+                <button type="button">
+                  <img src={iconSMoreVertical} alt="바텀시트 열기 버튼" />
+                </button>
+                <span>{mood.textAreaValue}</span>
+                {mood.fileURLs.length > 0 ? (
+                  <img src={mood.fileURLs[0]} alt="무드 이미지" />
+                ) : (
+                  ""
+                )}
+
+                <p>
+                  <span>2024년</span>
+                  <span>10월</span>
+                  <span>4일</span>
+                </p>
+              </li>
+            ))}
           </MoodList>
         </MyMoodStyle>
       </MainStyle>
@@ -206,4 +203,5 @@ const MainStyle = styled.main`
 
 const CategoryContainer = styled.div`
   padding: 19px 21px 0 21px;
+  position: relative;
 `;
