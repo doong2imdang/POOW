@@ -107,11 +107,11 @@ export const MoodList = styled.ul`
       height: 252px;
       border-radius: 10px;
       border: 1px solid #dbdbdb;
-      margin: 16px 0;
     }
 
     > span {
       width: 326px;
+      margin-bottom: 16px;
     }
 
     p {
@@ -120,6 +120,7 @@ export const MoodList = styled.ul`
       font-size: 10px;
       display: flex;
       gap: 3px;
+      margin-top: 16px;
     }
 
     &:last-child {
