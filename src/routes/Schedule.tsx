@@ -30,9 +30,6 @@ const Schedule: React.FC = () => {
 			<Header text />
 			<ScheduleContainer>
 				<SchedulePost />
-				<SchedulePost />
-				<SchedulePost />
-				<SchedulePost />
 			</ScheduleContainer>
 		</>
 	);
