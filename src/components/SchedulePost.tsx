@@ -1,10 +1,14 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import iconEdit from "../assets/images/icon-edit.svg";
 import iconDelete from "../assets/images/icon-delete.svg";
 import iconCrystalBall from "../assets/images/icon-fill-crystalball.svg";
 import iconWeather from "../assets/images/icon-fill-weather.svg";
 import iconChecklist from "../assets/images/icon-fill-checklist.svg";
+import { db } from "../firebase";
+import { collection, getDocs } from "firebase/firestore";
+import { useSelector } from "react-redux";
+import { RootState } from "../redux/store";
 
 const Container = styled.div`
 	margin: 20px 0 0 0;
@@ -99,52 +103,80 @@ const BtnContents = styled.button`
 `;
 
 const SchedulePost: React.FC = () => {
+	const [schedules, setSchedules] = useState<any[]>([]); // 상태 초기화
+	const userId = useSelector((state: RootState) => state.auth.uid);
+
+	useEffect(() => {
+		const fetchSchedules = async () => {
+			if (!userId) {
+				console.error("사용자 ID가 없습니다."); // 사용자 ID가 없을 경우 처리
+				return;
+			}
+
+			const schedulesRef = collection(db, "user", userId, "schedules");
+			const scheduleSnapshot = await getDocs(schedulesRef);
+			const scheduleList = scheduleSnapshot.docs.map((doc) => ({
+				id: doc.id,
+				...doc.data(),
+			}));
+			setSchedules(scheduleList);
+		};
+
+		fetchSchedules();
+	}, [userId]);
+
 	return (
-		<Container>
-			<ButtonWrap>
-				<Button>
-					<Icon src={iconEdit} alt="Edit" />
-				</Button>
-				<Button>
-					<Icon src={iconDelete} alt="Delete" />
-				</Button>
-			</ButtonWrap>
-			<Date>2024. 10. 13. 일</Date>
-			<ScheduleWrap>
-				<img src="" alt="" />
-				<RightPart>
-					<ScheduleInfo>
-						<ScheduleDetail>
-							<h4>장소</h4>
-							<p>고양어울림누리 어울림극장</p>
-						</ScheduleDetail>
-						<ScheduleDetail>
-							<h4>관람명</h4>
-							<p>어울림누리 개관 20주년 기념 스페셜 콘서트 VOL.2</p>
-						</ScheduleDetail>
-						<ScheduleDetail>
-							<h4>관람시간</h4>
-							<p>17:00 / 120분</p>
-						</ScheduleDetail>
-						<ScheduleDetail>
-							<h4>출연진</h4>
-							<p>나상현씨밴드, PL, 다린, 최인경</p>
-						</ScheduleDetail>
-					</ScheduleInfo>
-					<ContentsWrap>
-						<BtnContents>
-							<img src={iconCrystalBall} alt="CrystalBall" />
-						</BtnContents>
-						<BtnContents>
-							<img src={iconWeather} alt="Weather" />
-						</BtnContents>
-						<BtnContents>
-							<img src={iconChecklist} alt="Checklist" />
-						</BtnContents>
-					</ContentsWrap>
-				</RightPart>
-			</ScheduleWrap>
-		</Container>
+		<>
+			{schedules.map((schedule) => (
+				<Container key={schedule.id}>
+					<ButtonWrap>
+						<Button>
+							<Icon src={iconEdit} alt="Edit" />
+						</Button>
+						<Button>
+							<Icon src={iconDelete} alt="Delete" />
+						</Button>
+					</ButtonWrap>
+					<Date>{schedule.prfpdto}</Date>
+					<ScheduleWrap>
+						<img src={schedule.poster} alt={schedule.prfnm} />
+						<RightPart>
+							<ScheduleInfo>
+								<ScheduleDetail>
+									<h4>장소</h4>
+									<p>{schedule.fcltynm}</p>
+								</ScheduleDetail>
+								<ScheduleDetail>
+									<h4>관람명</h4>
+									<p>{schedule.prfnm}</p>
+								</ScheduleDetail>
+								<ScheduleDetail>
+									<h4>관람시간</h4>
+									<p>
+										{schedule.dtguidance} / {schedule.prfruntime}
+									</p>
+								</ScheduleDetail>
+								<ScheduleDetail>
+									<h4>출연진</h4>
+									<p>{schedule.prfcast}</p>
+								</ScheduleDetail>
+							</ScheduleInfo>
+							<ContentsWrap>
+								<BtnContents>
+									<img src={iconCrystalBall} alt="CrystalBall" />
+								</BtnContents>
+								<BtnContents>
+									<img src={iconWeather} alt="Weather" />
+								</BtnContents>
+								<BtnContents>
+									<img src={iconChecklist} alt="Checklist" />
+								</BtnContents>
+							</ContentsWrap>
+						</RightPart>
+					</ScheduleWrap>
+				</Container>
+			))}
+		</>
 	);
 };
 

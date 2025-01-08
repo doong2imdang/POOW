@@ -5,6 +5,10 @@ import IconSearch from "../assets/images/icon-search-fill.svg";
 import IconDate from "../assets/images/icon-date.svg";
 import axios from "axios";
 import ScheduleModal from "../components/ScheduleModal";
+import { db } from "../firebase";
+import { collection, addDoc } from "firebase/firestore";
+import { useSelector } from "react-redux";
+import { RootState } from "../redux/store";
 
 export interface ScheduleData {
 	mt20id: string[];
@@ -19,9 +23,11 @@ export interface ScheduleData {
 	prfstate: string[];
 	prfcast: string[];
 	dtguidance: string[];
+	prfruntime: string[];
 }
 
 const SetSchedule: React.FC = () => {
+	const [isFormValid, setIsFormValid] = useState<boolean>(false);
 	const [searchQuery, setSearchQuery] = useState<string>("");
 	const [todayDate, setTodayDate] = useState<string>("");
 	const [scheduleData, setScheduleData] = useState<ScheduleData[]>([]);
@@ -31,6 +37,8 @@ const SetSchedule: React.FC = () => {
 		null
 	);
 	const [selectedDate, setSelectedDate] = useState<string>("");
+	const [showTime, setShowTime] = useState<string>("");
+	const userId = useSelector((state: RootState) => state.auth.uid);
 
 	useEffect(() => {
 		const date = new Date();
@@ -39,6 +47,16 @@ const SetSchedule: React.FC = () => {
 		const day = String(date.getDate()).padStart(2, "0");
 		setTodayDate(`${year}${month}${day}`);
 	}, []);
+
+	useEffect(() => {
+		const isValid =
+			searchQuery.trim() !== "" &&
+			selectedSchedule !== null &&
+			selectedDate !== "" &&
+			Boolean(showTime.match(/^(?:[01]\d|2[0-3]):[0-5]\d$/));
+
+		setIsFormValid(isValid);
+	}, [searchQuery, selectedSchedule, selectedDate, showTime]);
 
 	const handleSearch = () => {
 		if (searchQuery.trim() === "") {
@@ -73,16 +91,56 @@ const SetSchedule: React.FC = () => {
 				`http://localhost:5000/api/kopis/by-id/${schedule.mt20id[0]}`
 			);
 			console.log("상세 정보 응답:", response.data);
-			setSelectedSchedule(response.data.dbs.db[0]);
+			const selectedData = response.data.dbs.db[0];
+
+			setSelectedSchedule(selectedData);
+			setSearchQuery(selectedData.prfnm[0]);
 			setIsModalOpen(false);
 		} catch (error) {
 			console.error("상세 정보 가져오기 오류:", error);
 		}
 	};
 
+	const handleSave = async () => {
+		if (!isFormValid) {
+			alert("양식을 올바르게 입력해주세요.");
+			return;
+		}
+
+		const scheduleToSave = {
+			mt20id: selectedSchedule?.mt20id[0] || "",
+			prfnm: searchQuery,
+			// prfpdfrom: todayDate,
+			prfpdto: selectedDate,
+			fcltynm: selectedSchedule?.fcltynm[0] || "",
+			poster: selectedSchedule?.poster[0] || "",
+			// area: selectedSchedule?.area[0] || "",
+			// openrun: selectedSchedule?.openrun[0] || "",
+			// prfstate: selectedSchedule?.prfstate[0] || "",
+			prfcast: selectedSchedule?.prfcast[0] || "",
+			dtguidance: showTime,
+			prfruntime: selectedSchedule?.prfruntime[0] || "",
+		};
+
+		if (!userId) {
+			alert("사용자 ID가 없습니다. 로그인 상태를 확인해주세요.");
+			return;
+		}
+
+		try {
+			const userSchedulesRef = collection(db, "user", userId, "schedules");
+			const docRef = await addDoc(userSchedulesRef, scheduleToSave);
+			// console.log("일정 저장 완료, 문서 ID:", docRef.id);
+			alert("일정이 저장되었습니다.");
+		} catch (error) {
+			console.error("일정 저장 오류:", error);
+			alert("일정 저장 중 오류가 발생했습니다.");
+		}
+	};
+
 	return (
 		<>
-			<Header set />
+			<Header set buttonDisabled={!isFormValid} onSave={handleSave} />
 			<SetScheduleContainer>
 				<Section>
 					<Label htmlFor="name">관람명</Label>
@@ -138,7 +196,13 @@ const SetSchedule: React.FC = () => {
 				</Section>
 				<Section>
 					<Label htmlFor="time">관람시간</Label>
-					<Input type="text" id="time" placeholder="관람시간을 입력해주세요." />
+					<Input
+						type="text"
+						id="time"
+						value={showTime}
+						placeholder="관람시간을 입력해주세요."
+						onChange={(e) => setShowTime(e.target.value)}
+					/>
 				</Section>
 				<Section>
 					<Label htmlFor="cast">출연진</Label>
