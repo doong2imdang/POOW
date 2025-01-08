@@ -57,7 +57,7 @@ export default function MyMood() {
   );
 }
 
-const MyMoodStyle = styled.div`
+export const MyMoodStyle = styled.div`
   background: #fff;
   display: flex;
   flex-direction: column;
@@ -85,9 +85,10 @@ const PostDisplayToggle = styled.div`
   }
 `;
 
-const MoodList = styled.ul`
+export const MoodList = styled.ul`
   font-size: 14px;
-  padding: 0 29px 60px 29px;
+  margin: 0 auto;
+  padding-bottom: 60px;
 
   li {
     border-bottom: 1px solid var(--color-disabled);
@@ -97,6 +98,7 @@ const MoodList = styled.ul`
 
     > button {
       margin-left: auto;
+      transform: translateX(8px);
     }
 
     > img {
@@ -105,7 +107,11 @@ const MoodList = styled.ul`
       height: 252px;
       border-radius: 10px;
       border: 1px solid #dbdbdb;
-      margin: 16px 0;
+    }
+
+    > span {
+      width: 326px;
+      margin-bottom: 16px;
     }
 
     p {
@@ -114,6 +120,7 @@ const MoodList = styled.ul`
       font-size: 10px;
       display: flex;
       gap: 3px;
+      margin-top: 16px;
     }
 
     &:last-child {

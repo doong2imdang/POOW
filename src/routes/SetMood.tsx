@@ -242,14 +242,14 @@ export default function SetMood() {
   );
 }
 
-const MainStyle = styled.main`
+export const MainStyle = styled.main`
   padding: 19px 21px;
   position: relative;
   width: 100%;
   height: calc(100% - 48px);
 `;
 
-const CategoryStyle = styled.div<{ $isFocused: boolean }>`
+export const CategoryStyle = styled.div<{ $isFocused: boolean }>`
   position: relative;
   button {
     position: absolute;
@@ -268,7 +268,7 @@ const CategoryStyle = styled.div<{ $isFocused: boolean }>`
   }
 `;
 
-const CategoryInput = styled.input`
+export const CategoryInput = styled.input`
   border: 1px solid var(--color-disabled);
   color: var(--color-dark);
   border-radius: 20px;
@@ -286,7 +286,7 @@ const CategoryInput = styled.input`
   }
 `;
 
-const CategoryLists = styled.ul`
+export const CategoryLists = styled.ul`
   border: 1px solid var(--color-disabled);
   background: #fff;
   width: 180px;
@@ -314,7 +314,7 @@ const CategoryLists = styled.ul`
   }
 `;
 
-const EmptyMessage = styled.p`
+export const EmptyMessage = styled.p`
   color: var(--color-disabled);
   padding: 7px 0;
   font-size: 14px;
