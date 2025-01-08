@@ -129,34 +129,11 @@ export default function Home() {
     setIsFocused(false);
   };
 
-  const handlePreviousImage = (moodIndex: number) => {
-    setMoods((prevMoods) =>
-      prevMoods.map((mood, index) =>
-        index === moodIndex
-          ? {
-              ...mood,
-              currentImageIndex:
-                mood.currentImageIndex === 0
-                  ? mood.fileURLs.length - 1
-                  : mood.currentImageIndex - 1,
-            }
-          : mood
-      )
-    );
-  };
-
-  const handleNextImage = (moodIndex: number) => {
-    setMoods((prevMoods) =>
-      prevMoods.map((mood, index) =>
-        index === moodIndex
-          ? {
-              ...mood,
-              currentImageIndex:
-                mood.currentImageIndex === mood.fileURLs.length - 1
-                  ? 0
-                  : mood.currentImageIndex + 1,
-            }
-          : mood
+  // 이미지 인덱스 변경
+  const handleImageIndexChange = (moodIndex: number, newIndex: number) => {
+    setFilteredMoods((prev) =>
+      prev.map((mood, index) =>
+        index === moodIndex ? { ...mood, currentImageIndex: newIndex } : mood
       )
     );
   };
@@ -227,7 +204,14 @@ export default function Home() {
                       <ImageSliderStyle>
                         {mood.fileURLs.length > 1 && (
                           <button
-                            onClick={() => handlePreviousImage(index)}
+                            onClick={() =>
+                              handleImageIndexChange(
+                                index,
+                                mood.currentImageIndex === 0
+                                  ? mood.fileURLs.length - 1
+                                  : mood.currentImageIndex - 1
+                              )
+                            }
                             type="button"
                           >
                             <img src={iconLeftSlide} alt="" />
@@ -242,7 +226,15 @@ export default function Home() {
 
                         {mood.fileURLs.length > 1 && (
                           <button
-                            onClick={() => handleNextImage(index)}
+                            onClick={() =>
+                              handleImageIndexChange(
+                                index,
+                                mood.currentImageIndex ===
+                                  mood.fileURLs.length - 1
+                                  ? 0
+                                  : mood.currentImageIndex + 1
+                              )
+                            }
                             type="button"
                           >
                             <img src={iconRightSlide} alt="" />
@@ -256,8 +248,14 @@ export default function Home() {
                   </p>
                   <BtnDotStyle>
                     {mood.fileURLs.length > 1 &&
-                      mood.fileURLs.map((url: string, i: number) => (
-                        <button key={i} type="button"></button>
+                      mood.fileURLs.map((url: string, dotIndex: number) => (
+                        <button
+                          key={dotIndex}
+                          type="button"
+                          className={
+                            mood.currentImageIndex === dotIndex ? "active" : ""
+                          }
+                        ></button>
                       ))}
                   </BtnDotStyle>
                 </li>
@@ -295,6 +293,10 @@ const BtnDotStyle = styled.div`
     background: var(--color-bg);
     padding: 0;
     margin-right: 5px;
+
+    &.active {
+      background: var(--color-main);
+    }
   }
 `;
 
