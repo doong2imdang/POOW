@@ -125,9 +125,21 @@ const SchedulePost: React.FC = () => {
 		fetchSchedules();
 	}, [userId]);
 
-	const formatDate = (dateString: string) => {
-		const [year, month, day] = dateString.split("-");
-		return `${year}. ${month.padStart(2, "0")}. ${day.padStart(2, "0")}`;
+	const formatDate = (dateString: string): string => {
+		const [yearStr, monthStr, dayStr] = dateString.split("-");
+		const year: number = Number(yearStr);
+		const month: number = Number(monthStr) - 1;
+		const day: number = Number(dayStr);
+
+		const date = new globalThis.Date(year, month, day);
+
+		const weekdays = ["일", "월", "화", "수", "목", "금", "토"];
+		const weekday = weekdays[date.getDay()];
+
+		return `${year}. ${monthStr.padStart(2, "0")}. ${dayStr.padStart(
+			2,
+			"0"
+		)} (${weekday})`;
 	};
 
 	return (
