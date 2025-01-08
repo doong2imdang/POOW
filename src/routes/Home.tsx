@@ -3,6 +3,8 @@ import styled from "styled-components";
 import Header from "../components/Header";
 import iconDropdown from "../assets/images/icon-dropdown.svg";
 import iconSMoreVertical from "../assets/images/s-icon-more-vertical.svg";
+import iconLeftSlide from "../assets/images/icon-left-slide.svg";
+import iconRightSlide from "../assets/images/icon-right-slide.svg";
 import {
   CategoryStyle,
   CategoryInput,
@@ -12,15 +14,23 @@ import {
 import { MoodList, MyMoodStyle } from "../components/MyMood";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
-import { collection, doc, getDocs } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
+
+interface Mood {
+  textAreaValue: string;
+  fileURLs: string[];
+  createdAt: any;
+  category: string;
+  currentImageIndex: number;
+}
 
 export default function Home() {
   const [category, setCategory] = useState<string>("");
   const [categoryList, setCategoryList] = useState<string[]>([]);
   const [isFocused, setIsFocused] = useState<boolean>(false);
   const categoryListRef = useRef<HTMLUListElement>(null);
-  const [moods, setMoods] = useState<any[]>([]);
+  const [moods, setMoods] = useState<Mood[]>([]);
   const [filteredMoods, setFilteredMoods] = useState<any[]>([]);
   const userId = useSelector((state: RootState) => state.auth.uid);
 
@@ -54,6 +64,7 @@ export default function Home() {
             const moodsData = documentsSnapshot.docs.map((doc) => ({
               ...doc.data(),
               category: categoryId,
+              currentImageIndex: 0,
             }));
             allMoods = [...allMoods, ...moodsData];
           }
@@ -118,6 +129,38 @@ export default function Home() {
     setIsFocused(false);
   };
 
+  const handlePreviousImage = (moodIndex: number) => {
+    setMoods((prevMoods) =>
+      prevMoods.map((mood, index) =>
+        index === moodIndex
+          ? {
+              ...mood,
+              currentImageIndex:
+                mood.currentImageIndex === 0
+                  ? mood.fileURLs.length - 1
+                  : mood.currentImageIndex - 1,
+            }
+          : mood
+      )
+    );
+  };
+
+  const handleNextImage = (moodIndex: number) => {
+    setMoods((prevMoods) =>
+      prevMoods.map((mood, index) =>
+        index === moodIndex
+          ? {
+              ...mood,
+              currentImageIndex:
+                mood.currentImageIndex === mood.fileURLs.length - 1
+                  ? 0
+                  : mood.currentImageIndex + 1,
+            }
+          : mood
+      )
+    );
+  };
+
   return (
     <>
       <Header main />
@@ -179,15 +222,44 @@ export default function Home() {
                     <img src={iconSMoreVertical} alt="바텀시트 열기 버튼" />
                   </button>
                   <span>{mood.textAreaValue}</span>
-                  {mood.fileURLs.length > 0 ? (
-                    <img src={mood.fileURLs[0]} alt="무드 이미지" />
-                  ) : (
-                    ""
-                  )}
+                  {mood.fileURLs.length > 0 && (
+                    <div>
+                      <ImageSliderStyle>
+                        {mood.fileURLs.length > 1 && (
+                          <button
+                            onClick={() => handlePreviousImage(index)}
+                            type="button"
+                          >
+                            <img src={iconLeftSlide} alt="" />
+                          </button>
+                        )}
+                        <div className="image-container">
+                          <img
+                            src={mood.fileURLs[mood.currentImageIndex]}
+                            alt="무드 이미지"
+                          />
+                        </div>
 
+                        {mood.fileURLs.length > 1 && (
+                          <button
+                            onClick={() => handleNextImage(index)}
+                            type="button"
+                          >
+                            <img src={iconRightSlide} alt="" />
+                          </button>
+                        )}
+                      </ImageSliderStyle>
+                    </div>
+                  )}
                   <p>
                     <span>{formattedDate}</span>
                   </p>
+                  <BtnDotStyle>
+                    {mood.fileURLs.length > 1 &&
+                      mood.fileURLs.map((url: string, i: number) => (
+                        <button key={i} type="button"></button>
+                      ))}
+                  </BtnDotStyle>
                 </li>
               );
             })}
@@ -210,4 +282,53 @@ const MainStyle = styled.main`
 const CategoryContainer = styled.div`
   padding: 19px 21px 0 21px;
   position: relative;
+`;
+
+const BtnDotStyle = styled.div`
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, 315px);
+  button {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-bg);
+    padding: 0;
+    margin-right: 5px;
+  }
+`;
+
+const ImageSliderStyle = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+
+  .image-container {
+    width: 336px;
+    height: 252px;
+    border: 1px solid var(--color-disabled);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: transform 0.5s ease-in-out;
+    > img {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  button {
+    border: none;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  button:first-child {
+    left: 10px;
+  }
+
+  button:last-child {
+    right: 10px;
+  }
 `;
