@@ -103,13 +103,13 @@ const BtnContents = styled.button`
 `;
 
 const SchedulePost: React.FC = () => {
-	const [schedules, setSchedules] = useState<any[]>([]); // 상태 초기화
+	const [schedules, setSchedules] = useState<any[]>([]);
 	const userId = useSelector((state: RootState) => state.auth.uid);
 
 	useEffect(() => {
 		const fetchSchedules = async () => {
 			if (!userId) {
-				console.error("사용자 ID가 없습니다."); // 사용자 ID가 없을 경우 처리
+				console.error("사용자 ID가 없습니다.");
 				return;
 			}
 
@@ -125,6 +125,11 @@ const SchedulePost: React.FC = () => {
 		fetchSchedules();
 	}, [userId]);
 
+	const formatDate = (dateString: string) => {
+		const [year, month, day] = dateString.split("-");
+		return `${year}. ${month.padStart(2, "0")}. ${day.padStart(2, "0")}`;
+	};
+
 	return (
 		<>
 			{schedules.map((schedule) => (
@@ -137,7 +142,7 @@ const SchedulePost: React.FC = () => {
 							<Icon src={iconDelete} alt="Delete" />
 						</Button>
 					</ButtonWrap>
-					<Date>{schedule.prfpdto}</Date>
+					<Date>{formatDate(schedule.prfpdto)}</Date> {}
 					<ScheduleWrap>
 						<img src={schedule.poster} alt={schedule.prfnm} />
 						<RightPart>
