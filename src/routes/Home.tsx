@@ -132,6 +132,8 @@ export default function Home() {
         index === moodIndex ? { ...mood, currentImageIndex: newIndex } : mood
       )
     );
+
+    console.log(filteredMoods);
   };
 
   return (
@@ -198,21 +200,22 @@ export default function Home() {
                   {mood.fileURLs.length > 0 && (
                     <div>
                       <ImageSliderStyle>
-                        {mood.fileURLs.length > 1 && (
-                          <button
-                            onClick={() =>
-                              handleImageIndexChange(
-                                index,
-                                mood.currentImageIndex === 0
-                                  ? mood.fileURLs.length - 1
-                                  : mood.currentImageIndex - 1
-                              )
-                            }
-                            type="button"
-                          >
-                            <img src={iconLeftSlide} alt="" />
-                          </button>
-                        )}
+                        {mood.fileURLs.length > 1 &&
+                          mood.currentImageIndex !== 0 && (
+                            <button
+                              onClick={() =>
+                                handleImageIndexChange(
+                                  index,
+                                  mood.currentImageIndex === 0
+                                    ? mood.fileURLs.length - 1
+                                    : mood.currentImageIndex - 1
+                                )
+                              }
+                              type="button"
+                            >
+                              <img src={iconLeftSlide} alt="" />
+                            </button>
+                          )}
                         <div className="image-container">
                           <img
                             src={mood.fileURLs[mood.currentImageIndex]}
@@ -220,22 +223,25 @@ export default function Home() {
                           />
                         </div>
 
-                        {mood.fileURLs.length > 1 && (
-                          <button
-                            onClick={() =>
-                              handleImageIndexChange(
-                                index,
-                                mood.currentImageIndex ===
-                                  mood.fileURLs.length - 1
-                                  ? 0
-                                  : mood.currentImageIndex + 1
-                              )
-                            }
-                            type="button"
-                          >
-                            <img src={iconRightSlide} alt="" />
-                          </button>
-                        )}
+                        {mood.fileURLs.length > 1 &&
+                          mood.currentImageIndex >= 0 &&
+                          mood.currentImageIndex !==
+                            mood.fileURLs.length - 1 && (
+                            <button
+                              onClick={() =>
+                                handleImageIndexChange(
+                                  index,
+                                  mood.currentImageIndex ===
+                                    mood.fileURLs.length - 1
+                                    ? 0
+                                    : mood.currentImageIndex + 1
+                                )
+                              }
+                              type="button"
+                            >
+                              <img src={iconRightSlide} alt="" />
+                            </button>
+                          )}
                       </ImageSliderStyle>
                     </div>
                   )}
