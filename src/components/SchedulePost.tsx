@@ -114,11 +114,7 @@ const SchedulePost: React.FC = () => {
 			}
 
 			const schedulesRef = collection(db, "user", userId, "schedules");
-			const q = query(
-				schedulesRef,
-				orderBy("prfpdto"), // 날짜 기준으로 정렬
-				orderBy("dtguidance") // dtguidance 기준으로 정렬
-			);
+			const q = query(schedulesRef, orderBy("prfpdto"), orderBy("dtguidance"));
 			const scheduleSnapshot = await getDocs(q);
 			const scheduleList = scheduleSnapshot.docs.map((doc) => ({
 				id: doc.id,

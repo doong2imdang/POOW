@@ -17,7 +17,11 @@ export default function MySchedule() {
 			}
 
 			const schedulesRef = collection(db, "user", userId, "schedules");
-			const schedulesQuery = query(schedulesRef, orderBy("prfpdto")); // prfpdto로 정렬
+			const schedulesQuery = query(
+				schedulesRef,
+				orderBy("prfpdto"),
+				orderBy("dtguidance")
+			);
 			const scheduleSnapshot = await getDocs(schedulesQuery);
 			const scheduleList = scheduleSnapshot.docs.map((doc) => ({
 				id: doc.id,
