@@ -69,7 +69,6 @@ export default function Home() {
             allMoods = [...allMoods, ...moodsData];
           }
           setMoods(allMoods);
-          console.log(moods, "moods");
         }
       } catch (e) {
         console.error("카테고리 로드 중 오류 발생", e);
@@ -77,8 +76,6 @@ export default function Home() {
     };
     fetchCategoriesAndMoods();
   }, [userId]);
-
-  console.log(category);
 
   // 카테고리가 변경될 때 무드 필터링
   useEffect(() => {
@@ -88,8 +85,6 @@ export default function Home() {
     } else {
       setFilteredMoods(moods);
     }
-
-    console.log(filteredMoods, "filteredMoods");
   }, [category, moods]);
 
   // 화면 바깥 클릭 감지
