@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { db } from "../firebase";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, query, orderBy } from "firebase/firestore";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 
@@ -17,7 +17,8 @@ export default function MySchedule() {
 			}
 
 			const schedulesRef = collection(db, "user", userId, "schedules");
-			const scheduleSnapshot = await getDocs(schedulesRef);
+			const schedulesQuery = query(schedulesRef, orderBy("prfpdto")); // prfpdto로 정렬
+			const scheduleSnapshot = await getDocs(schedulesQuery);
 			const scheduleList = scheduleSnapshot.docs.map((doc) => ({
 				id: doc.id,
 				...doc.data(),
