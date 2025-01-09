@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import styled from "styled-components";
 import IconSearch from "../assets/images/icon-search-fill.svg";
@@ -27,6 +28,7 @@ export interface ScheduleData {
 }
 
 const SetSchedule: React.FC = () => {
+	const navigate = useNavigate();
 	const [isFormValid, setIsFormValid] = useState<boolean>(false);
 	const [searchQuery, setSearchQuery] = useState<string>("");
 	const [todayDate, setTodayDate] = useState<string>("");
@@ -130,8 +132,8 @@ const SetSchedule: React.FC = () => {
 		try {
 			const userSchedulesRef = collection(db, "user", userId, "schedules");
 			const docRef = await addDoc(userSchedulesRef, scheduleToSave);
-			// console.log("일정 저장 완료, 문서 ID:", docRef.id);
 			alert("일정이 저장되었습니다.");
+			navigate("/schedule");
 		} catch (error) {
 			console.error("일정 저장 오류:", error);
 			alert("일정 저장 중 오류가 발생했습니다.");
