@@ -16,6 +16,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
+import BottomSheet from "../components/BottomSheet";
 
 interface Mood {
   textAreaValue: string;
@@ -33,6 +34,10 @@ export default function Home() {
   const [moods, setMoods] = useState<Mood[]>([]);
   const [filteredMoods, setFilteredMoods] = useState<any[]>([]);
   const userId = useSelector((state: RootState) => state.auth.uid);
+  const [isBottomSheet, setIsBottomSheet] = useState<boolean>(false);
+  const toggleBottomSheet = () => {
+    setIsBottomSheet((prev) => !prev);
+  };
 
   // 초기 카테고리 목록 및 무드 가져오기기
   useEffect(() => {
@@ -138,6 +143,12 @@ export default function Home() {
 
   return (
     <>
+      {isBottomSheet && (
+        <BottomSheet
+          text="삭제, 수정"
+          toggleBottomSheet={toggleBottomSheet || (() => {})}
+        />
+      )}
       <Header main />
       <MainStyle>
         <CategoryContainer>
@@ -193,7 +204,7 @@ export default function Home() {
               });
               return (
                 <li key={index}>
-                  <button type="button">
+                  <button type="button" onClick={toggleBottomSheet}>
                     <img src={iconSMoreVertical} alt="바텀시트 열기 버튼" />
                   </button>
                   <span>{mood.textAreaValue}</span>
