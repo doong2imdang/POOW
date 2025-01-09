@@ -11,16 +11,22 @@ app.use(cors());
 
 app.get("/api/kopis", async (req, res) => {
 	const apiKey = process.env.REACT_APP_API_KEY;
-	const todayDate = new Date().toISOString().slice(0, 10).replace(/-/g, "");
-	const todayDatePlus31 = new Date();
-	todayDatePlus31.setDate(todayDatePlus31.getDate() + 31);
-	const formattedDatePlus31 = todayDatePlus31
+
+	const todayDate = new Date();
+	const formattedTodayDate = todayDate
+		.toISOString()
+		.slice(0, 10)
+		.replace(/-/g, "");
+
+	const todayDatePlus5Years = new Date(todayDate);
+	todayDatePlus5Years.setFullYear(todayDatePlus5Years.getFullYear() + 5);
+	const formattedDatePlus5Years = todayDatePlus5Years
 		.toISOString()
 		.slice(0, 10)
 		.replace(/-/g, "");
 
 	const searchQuery = req.query.shprfnm || "";
-	const apiUrl = `http://www.kopis.or.kr/openApi/restful/pblprfr?service=${apiKey}&stdate=${todayDate}&eddate=${formattedDatePlus31}&cpage=1&rows=50&prfstate=01&prfstate=02&shprfnm=${encodeURIComponent(
+	const apiUrl = `http://www.kopis.or.kr/openApi/restful/pblprfr?service=${apiKey}&stdate=${formattedTodayDate}&eddate=${formattedDatePlus5Years}&cpage=1&rows=50&prfstate=01&prfstate=02&shprfnm=${encodeURIComponent(
 		searchQuery
 	)}`;
 
