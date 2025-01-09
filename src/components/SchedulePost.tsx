@@ -6,7 +6,7 @@ import iconCrystalBall from "../assets/images/icon-fill-crystalball.svg";
 import iconWeather from "../assets/images/icon-fill-weather.svg";
 import iconChecklist from "../assets/images/icon-fill-checklist.svg";
 import { db } from "../firebase";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, query, orderBy } from "firebase/firestore";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 
@@ -114,7 +114,8 @@ const SchedulePost: React.FC = () => {
 			}
 
 			const schedulesRef = collection(db, "user", userId, "schedules");
-			const scheduleSnapshot = await getDocs(schedulesRef);
+			const q = query(schedulesRef, orderBy("prfpdto")); // prfpdto 필드 기준으로 정렬
+			const scheduleSnapshot = await getDocs(q);
 			const scheduleList = scheduleSnapshot.docs.map((doc) => ({
 				id: doc.id,
 				...doc.data(),
