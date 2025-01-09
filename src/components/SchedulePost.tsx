@@ -114,7 +114,11 @@ const SchedulePost: React.FC = () => {
 			}
 
 			const schedulesRef = collection(db, "user", userId, "schedules");
-			const q = query(schedulesRef, orderBy("prfpdto")); // prfpdto 필드 기준으로 정렬
+			const q = query(
+				schedulesRef,
+				orderBy("prfpdto"), // 날짜 기준으로 정렬
+				orderBy("dtguidance") // dtguidance 기준으로 정렬
+			);
 			const scheduleSnapshot = await getDocs(q);
 			const scheduleList = scheduleSnapshot.docs.map((doc) => ({
 				id: doc.id,
@@ -133,7 +137,6 @@ const SchedulePost: React.FC = () => {
 		const day: number = Number(dayStr);
 
 		const date = new globalThis.Date(year, month, day);
-
 		const weekdays = ["일", "월", "화", "수", "목", "금", "토"];
 		const weekday = weekdays[date.getDay()];
 
@@ -155,7 +158,7 @@ const SchedulePost: React.FC = () => {
 							<Icon src={iconDelete} alt="Delete" />
 						</Button>
 					</ButtonWrap>
-					<Date>{formatDate(schedule.prfpdto)}</Date> {}
+					<Date>{formatDate(schedule.prfpdto)}</Date>
 					<ScheduleWrap>
 						<img src={schedule.poster} alt={schedule.prfnm} />
 						<RightPart>
