@@ -68,6 +68,7 @@ export default function Home() {
             }));
             allMoods = [...allMoods, ...moodsData];
           }
+          allMoods.sort((a, b) => b.createdAt.toDate() - a.createdAt.toDate());
           setMoods(allMoods);
         }
       } catch (e) {
