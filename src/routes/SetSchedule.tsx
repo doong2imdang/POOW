@@ -73,7 +73,7 @@ const SetSchedule: React.FC = () => {
 		axios
 			.get<ScheduleData[]>(url)
 			.then((result) => {
-				console.log("API 응답 데이터:", result.data);
+				// console.log("API 응답 데이터:", result.data);
 				setScheduleData(result.data);
 				setApiUrl(url);
 				setIsModalOpen(true);
@@ -92,7 +92,7 @@ const SetSchedule: React.FC = () => {
 			const response = await axios.get(
 				`http://localhost:5000/api/kopis/by-id/${schedule.mt20id[0]}`
 			);
-			console.log("상세 정보 응답:", response.data);
+			// console.log("상세 정보 응답:", response.data);
 			const selectedData = response.data.dbs.db[0];
 
 			setSelectedSchedule(selectedData);
