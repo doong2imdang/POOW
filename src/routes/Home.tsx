@@ -16,6 +16,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
+import BottomSheet from "../components/BottomSheet";
 
 interface Mood {
   textAreaValue: string;
@@ -33,6 +34,10 @@ export default function Home() {
   const [moods, setMoods] = useState<Mood[]>([]);
   const [filteredMoods, setFilteredMoods] = useState<any[]>([]);
   const userId = useSelector((state: RootState) => state.auth.uid);
+  const [isBottomSheet, setIsBottomSheet] = useState<boolean>(false);
+  const toggleBottomSheet = () => {
+    setIsBottomSheet((prev) => !prev);
+  };
 
   // 초기 카테고리 목록 및 무드 가져오기기
   useEffect(() => {
@@ -68,8 +73,8 @@ export default function Home() {
             }));
             allMoods = [...allMoods, ...moodsData];
           }
+          allMoods.sort((a, b) => b.createdAt.toDate() - a.createdAt.toDate());
           setMoods(allMoods);
-          console.log(moods, "moods");
         }
       } catch (e) {
         console.error("카테고리 로드 중 오류 발생", e);
@@ -77,8 +82,6 @@ export default function Home() {
     };
     fetchCategoriesAndMoods();
   }, [userId]);
-
-  console.log(category);
 
   // 카테고리가 변경될 때 무드 필터링
   useEffect(() => {
@@ -88,8 +91,6 @@ export default function Home() {
     } else {
       setFilteredMoods(moods);
     }
-
-    console.log(filteredMoods, "filteredMoods");
   }, [category, moods]);
 
   // 화면 바깥 클릭 감지
@@ -136,10 +137,18 @@ export default function Home() {
         index === moodIndex ? { ...mood, currentImageIndex: newIndex } : mood
       )
     );
+
+    console.log(filteredMoods);
   };
 
   return (
     <>
+      {isBottomSheet && (
+        <BottomSheet
+          text="삭제, 수정"
+          toggleBottomSheet={toggleBottomSheet || (() => {})}
+        />
+      )}
       <Header main />
       <MainStyle>
         <CategoryContainer>
@@ -195,28 +204,29 @@ export default function Home() {
               });
               return (
                 <li key={index}>
-                  <button type="button">
+                  <button type="button" onClick={toggleBottomSheet}>
                     <img src={iconSMoreVertical} alt="바텀시트 열기 버튼" />
                   </button>
                   <span>{mood.textAreaValue}</span>
                   {mood.fileURLs.length > 0 && (
                     <div>
                       <ImageSliderStyle>
-                        {mood.fileURLs.length > 1 && (
-                          <button
-                            onClick={() =>
-                              handleImageIndexChange(
-                                index,
-                                mood.currentImageIndex === 0
-                                  ? mood.fileURLs.length - 1
-                                  : mood.currentImageIndex - 1
-                              )
-                            }
-                            type="button"
-                          >
-                            <img src={iconLeftSlide} alt="" />
-                          </button>
-                        )}
+                        {mood.fileURLs.length > 1 &&
+                          mood.currentImageIndex !== 0 && (
+                            <button
+                              onClick={() =>
+                                handleImageIndexChange(
+                                  index,
+                                  mood.currentImageIndex === 0
+                                    ? mood.fileURLs.length - 1
+                                    : mood.currentImageIndex - 1
+                                )
+                              }
+                              type="button"
+                            >
+                              <img src={iconLeftSlide} alt="" />
+                            </button>
+                          )}
                         <div className="image-container">
                           <img
                             src={mood.fileURLs[mood.currentImageIndex]}
@@ -224,22 +234,25 @@ export default function Home() {
                           />
                         </div>
 
-                        {mood.fileURLs.length > 1 && (
-                          <button
-                            onClick={() =>
-                              handleImageIndexChange(
-                                index,
-                                mood.currentImageIndex ===
-                                  mood.fileURLs.length - 1
-                                  ? 0
-                                  : mood.currentImageIndex + 1
-                              )
-                            }
-                            type="button"
-                          >
-                            <img src={iconRightSlide} alt="" />
-                          </button>
-                        )}
+                        {mood.fileURLs.length > 1 &&
+                          mood.currentImageIndex >= 0 &&
+                          mood.currentImageIndex !==
+                            mood.fileURLs.length - 1 && (
+                            <button
+                              onClick={() =>
+                                handleImageIndexChange(
+                                  index,
+                                  mood.currentImageIndex ===
+                                    mood.fileURLs.length - 1
+                                    ? 0
+                                    : mood.currentImageIndex + 1
+                                )
+                              }
+                              type="button"
+                            >
+                              <img src={iconRightSlide} alt="" />
+                            </button>
+                          )}
                       </ImageSliderStyle>
                     </div>
                   )}
