@@ -18,7 +18,7 @@ import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
 import BottomSheet from "../components/BottomSheet";
 
-interface Mood {
+export interface Mood {
   textAreaValue: string;
   fileURLs: string[];
   createdAt: any;
@@ -35,7 +35,10 @@ export default function Home() {
   const [filteredMoods, setFilteredMoods] = useState<any[]>([]);
   const userId = useSelector((state: RootState) => state.auth.uid);
   const [isBottomSheet, setIsBottomSheet] = useState<boolean>(false);
-  const toggleBottomSheet = () => {
+  const [selectedMood, setSelectedMood] = useState<Mood | null>(null);
+
+  const toggleBottomSheet = (mood: Mood | null = null) => {
+    setSelectedMood(mood);
     setIsBottomSheet((prev) => !prev);
   };
 
@@ -147,6 +150,7 @@ export default function Home() {
         <BottomSheet
           text="삭제, 수정"
           toggleBottomSheet={toggleBottomSheet || (() => {})}
+          selectedMood={selectedMood}
         />
       )}
       <Header main />
@@ -204,7 +208,12 @@ export default function Home() {
               });
               return (
                 <li key={index}>
-                  <button type="button" onClick={toggleBottomSheet}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      toggleBottomSheet(mood);
+                    }}
+                  >
                     <img src={iconSMoreVertical} alt="바텀시트 열기 버튼" />
                   </button>
                   <span>{mood.textAreaValue}</span>
