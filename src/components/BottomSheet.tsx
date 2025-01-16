@@ -6,15 +6,18 @@ import { logout } from "../redux/authSlice";
 import { signOut } from "firebase/auth";
 import { auth } from "../firebase";
 import { useNavigate } from "react-router-dom";
+import { Mood } from "../routes/Home";
 
 interface BottomSheetProps {
   text?: string;
   toggleBottomSheet: () => void;
+  selectedMood?: Mood | null;
 }
 
 const BottomSheet: React.FC<BottomSheetProps> = ({
   text,
   toggleBottomSheet,
+  selectedMood,
 }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -35,6 +38,8 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
       setConfirmText(lastWord);
     }
     setIsModalOpen(true);
+
+    console.log(selectedMood);
   };
 
   const handleCloseModal = () => {
