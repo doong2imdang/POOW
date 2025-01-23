@@ -5,8 +5,13 @@ import iconPostListOff from "../assets/images/icon-post-list-off.svg";
 import iconPostAlbumOn from "../assets/images/icon-post-album-on.svg";
 import iconPostAlbumOff from "../assets/images/icon-post-album-off.svg";
 import iconSMoreVertical from "../assets/images/s-icon-more-vertical.svg";
+import { useSelector } from "react-redux";
+import { RootState } from "../redux/store";
 
 export default function MyMood() {
+  const moods = useSelector((state: RootState) => state.moods.moods);
+  console.log(moods);
+
   return (
     <MyMoodStyle>
       <PostDisplayToggle>
