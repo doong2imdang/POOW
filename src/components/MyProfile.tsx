@@ -11,6 +11,7 @@ export default function MyProfile() {
   const { username, accountID, imageURL } = useSelector(
     (state: RootState) => state.auth
   );
+  const moods = useSelector((state: RootState) => state.moods.moods);
 
   return (
     <MyProfileStyle>
@@ -21,7 +22,7 @@ export default function MyProfile() {
         {accountID}
       </p>
       <p>
-        mood<span>6</span>
+        mood<span>{moods.length}</span>
       </p>
       <Button
         $width="120px"

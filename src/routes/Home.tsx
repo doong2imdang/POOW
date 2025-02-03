@@ -12,7 +12,8 @@ import {
   EmptyMessage,
 } from "./SetMood";
 import { MoodList, MyMoodStyle } from "../components/MyMood";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { setMoods } from "../redux/moodSlice";
 import { RootState } from "../redux/store";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
@@ -27,12 +28,13 @@ export interface Mood {
 }
 
 export default function Home() {
+  const dispatch = useDispatch();
   const [category, setCategory] = useState<string>("");
   const [categoryList, setCategoryList] = useState<string[]>([]);
   const [isFocused, setIsFocused] = useState<boolean>(false);
   const categoryListRef = useRef<HTMLUListElement>(null);
-  const [moods, setMoods] = useState<Mood[]>([]);
-  const [filteredMoods, setFilteredMoods] = useState<any[]>([]);
+  const moods = useSelector((state: RootState) => state.moods.moods);
+  const [filteredMoods, setFilteredMoods] = useState<Mood[]>([]);
   const userId = useSelector((state: RootState) => state.auth.uid);
   const [isBottomSheet, setIsBottomSheet] = useState<boolean>(false);
   const [selectedMood, setSelectedMood] = useState<Mood | null>(null);
@@ -77,14 +79,16 @@ export default function Home() {
             allMoods = [...allMoods, ...moodsData];
           }
           allMoods.sort((a, b) => b.createdAt.toDate() - a.createdAt.toDate());
-          setMoods(allMoods);
+          dispatch(setMoods(allMoods));
         }
       } catch (e) {
         console.error("카테고리 로드 중 오류 발생", e);
       }
     };
     fetchCategoriesAndMoods();
-  }, [userId]);
+  }, [userId, dispatch]);
+
+  console.log(moods);
 
   // 카테고리가 변경될 때 무드 필터링
   useEffect(() => {
