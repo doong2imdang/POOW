@@ -167,7 +167,7 @@ export default function Home() {
             <CategoryStyle $isFocused={isFocused}>
               <CategoryInput
                 type="text"
-                placeholder="카테고리 입력"
+                placeholder="카테고리"
                 value={category}
                 onChange={handleCategoryChange}
                 onKeyPress={handleCategoryKeyPress}
