@@ -7,6 +7,10 @@ const store = configureStore({
     auth: authReducer,
     moods: moodReducer,
   },
+  middleware: (getDefaultware) =>
+    getDefaultware({
+      serializableCheck: false,
+    }),
 });
 
 // 타입 정의
