@@ -19,6 +19,7 @@ import { RootState } from "../redux/store";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
 import BottomSheet from "../components/BottomSheet";
+import { useNavigate } from "react-router-dom";
 
 export interface Mood {
   textAreaValue: string;
@@ -30,6 +31,7 @@ export interface Mood {
 
 export default function Home() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [category, setCategory] = useState<string>("");
   const [categoryList, setCategoryList] = useState<string[]>([]);
   const [isFocused, setIsFocused] = useState<boolean>(false);
@@ -300,7 +302,14 @@ export default function Home() {
               <EmptyMoodContainer>
                 <img src={symbolLogoGray} alt="" />
                 <p>mood를 등록해보세요!</p>
-                <button type="button">mood 등록</button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigate("/setmood");
+                  }}
+                >
+                  mood 등록
+                </button>
               </EmptyMoodContainer>
             )}
           </MoodList>
