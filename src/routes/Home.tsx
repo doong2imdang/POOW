@@ -5,6 +5,7 @@ import iconDropdown from "../assets/images/icon-dropdown.svg";
 import iconSMoreVertical from "../assets/images/s-icon-more-vertical.svg";
 import iconLeftSlide from "../assets/images/icon-left-slide.svg";
 import iconRightSlide from "../assets/images/icon-right-slide.svg";
+import symbolLogoGray from "../assets/images/symbol-logo-gray.svg";
 import {
   CategoryStyle,
   CategoryInput,
@@ -160,27 +161,32 @@ export default function Home() {
       <Header main />
       <MainStyle>
         <CategoryContainer>
-          <CategoryStyle $isFocused={isFocused}>
-            <CategoryInput
-              type="text"
-              placeholder="카테고리 입력"
-              value={category}
-              onChange={handleCategoryChange}
-              onKeyPress={handleCategoryKeyPress}
-              onFocus={() => {
-                setCategory("");
-                setIsFocused(true);
-              }}
-            />
-            <button
-              type="button"
-              onClick={() => {
-                setIsFocused(!isFocused);
-              }}
-            >
-              <img src={iconDropdown} alt="화살표 버튼" />
-            </button>
-          </CategoryStyle>
+          {filteredMoods.length > 0 ? (
+            <CategoryStyle $isFocused={isFocused}>
+              <CategoryInput
+                type="text"
+                placeholder="카테고리 입력"
+                value={category}
+                onChange={handleCategoryChange}
+                onKeyPress={handleCategoryKeyPress}
+                onFocus={() => {
+                  setCategory("");
+                  setIsFocused(true);
+                }}
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  setIsFocused(!isFocused);
+                }}
+              >
+                <img src={iconDropdown} alt="화살표 버튼" />
+              </button>
+            </CategoryStyle>
+          ) : (
+            ""
+          )}
+
           {isFocused && (
             <CategoryLists
               ref={categoryListRef}
@@ -203,90 +209,100 @@ export default function Home() {
         </CategoryContainer>
         <MyMoodStyle>
           <MoodList>
-            {filteredMoods.map((mood, index) => {
-              const date = mood.createdAt.toDate();
-              const formattedDate = date.toLocaleDateString("ko-KR", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              });
-              return (
-                <li key={index}>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      toggleBottomSheet(mood);
-                    }}
-                  >
-                    <img src={iconSMoreVertical} alt="바텀시트 열기 버튼" />
-                  </button>
-                  <span>{mood.textAreaValue}</span>
-                  {mood.fileURLs.length > 0 && (
-                    <div>
-                      <ImageSliderStyle>
-                        {mood.fileURLs.length > 1 &&
-                          mood.currentImageIndex !== 0 && (
-                            <button
-                              onClick={() =>
-                                handleImageIndexChange(
-                                  index,
-                                  mood.currentImageIndex === 0
-                                    ? mood.fileURLs.length - 1
-                                    : mood.currentImageIndex - 1
-                                )
-                              }
-                              type="button"
-                            >
-                              <img src={iconLeftSlide} alt="" />
-                            </button>
-                          )}
-                        <div className="image-container">
-                          <img
-                            src={mood.fileURLs[mood.currentImageIndex]}
-                            alt="무드 이미지"
-                          />
-                        </div>
+            {filteredMoods.length > 0 ? (
+              filteredMoods.map((mood, index) => {
+                const date = mood.createdAt.toDate();
+                const formattedDate = date.toLocaleDateString("ko-KR", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                });
+                return (
+                  <li key={index}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        toggleBottomSheet(mood);
+                      }}
+                    >
+                      <img src={iconSMoreVertical} alt="바텀시트 열기 버튼" />
+                    </button>
+                    <span>{mood.textAreaValue}</span>
+                    {mood.fileURLs.length > 0 && (
+                      <div>
+                        <ImageSliderStyle>
+                          {mood.fileURLs.length > 1 &&
+                            mood.currentImageIndex !== 0 && (
+                              <button
+                                onClick={() =>
+                                  handleImageIndexChange(
+                                    index,
+                                    mood.currentImageIndex === 0
+                                      ? mood.fileURLs.length - 1
+                                      : mood.currentImageIndex - 1
+                                  )
+                                }
+                                type="button"
+                              >
+                                <img src={iconLeftSlide} alt="" />
+                              </button>
+                            )}
+                          <div className="image-container">
+                            <img
+                              src={mood.fileURLs[mood.currentImageIndex]}
+                              alt="무드 이미지"
+                            />
+                          </div>
 
-                        {mood.fileURLs.length > 1 &&
-                          mood.currentImageIndex >= 0 &&
-                          mood.currentImageIndex !==
-                            mood.fileURLs.length - 1 && (
-                            <button
-                              onClick={() =>
-                                handleImageIndexChange(
-                                  index,
-                                  mood.currentImageIndex ===
-                                    mood.fileURLs.length - 1
-                                    ? 0
-                                    : mood.currentImageIndex + 1
-                                )
-                              }
-                              type="button"
-                            >
-                              <img src={iconRightSlide} alt="" />
-                            </button>
-                          )}
-                      </ImageSliderStyle>
-                    </div>
-                  )}
-                  <p>
-                    <span>{formattedDate}</span>
-                  </p>
-                  <BtnDotStyle>
-                    {mood.fileURLs.length > 1 &&
-                      mood.fileURLs.map((url: string, dotIndex: number) => (
-                        <button
-                          key={dotIndex}
-                          type="button"
-                          className={
-                            mood.currentImageIndex === dotIndex ? "active" : ""
-                          }
-                        ></button>
-                      ))}
-                  </BtnDotStyle>
-                </li>
-              );
-            })}
+                          {mood.fileURLs.length > 1 &&
+                            mood.currentImageIndex >= 0 &&
+                            mood.currentImageIndex !==
+                              mood.fileURLs.length - 1 && (
+                              <button
+                                onClick={() =>
+                                  handleImageIndexChange(
+                                    index,
+                                    mood.currentImageIndex ===
+                                      mood.fileURLs.length - 1
+                                      ? 0
+                                      : mood.currentImageIndex + 1
+                                  )
+                                }
+                                type="button"
+                              >
+                                <img src={iconRightSlide} alt="" />
+                              </button>
+                            )}
+                        </ImageSliderStyle>
+                      </div>
+                    )}
+                    <p>
+                      <span>{formattedDate}</span>
+                    </p>
+                    <BtnDotStyle>
+                      {mood.fileURLs.length > 1 &&
+                        mood.fileURLs.map((url: string, dotIndex: number) => (
+                          <button
+                            key={dotIndex}
+                            type="button"
+                            className={
+                              mood.currentImageIndex === dotIndex
+                                ? "active"
+                                : ""
+                            }
+                          ></button>
+                        ))}
+                    </BtnDotStyle>
+                  </li>
+                );
+              })
+            ) : (
+              <EmptyMoodContainer>
+                <img src={symbolLogoGray} alt="" />
+                <p>mood를 등록해보세요!</p>
+                <button type="button">mood 등록</button>
+              </EmptyMoodContainer>
+            )}
           </MoodList>
         </MyMoodStyle>
       </MainStyle>
@@ -358,5 +374,33 @@ const ImageSliderStyle = styled.div`
 
   button:last-child {
     right: 10px;
+  }
+`;
+
+const EmptyMoodContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  transform: translateY(-15%);
+  justify-content: center;
+  font-size: 14px;
+
+  img {
+    max-width: 100px;
+    margin: 0 auto;
+  }
+
+  p {
+    color: #767676;
+    padding: 13px 0 29px 0;
+  }
+
+  button {
+    color: var(--color-dark);
+    background: var(--color-main);
+    width: 120px;
+    height: 44px;
+    border-radius: 20px;
+    margin: 0 auto;
   }
 `;
