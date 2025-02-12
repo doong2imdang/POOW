@@ -17,9 +17,15 @@ import {
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 import { useNavigate } from "react-router-dom";
+import SelectModal from "./SelectModal";
 
 const SchedulePost: React.FC = () => {
 	const [schedules, setSchedules] = useState<any[]>([]);
+	const [selectedScheduleId, setSelectedScheduleId] = useState<string | null>(
+		null
+	);
+	const [isBgVisible, setIsBgVisible] = useState(false);
+	const [isModalOpen, setIsModalOpen] = useState(false);
 	const userId = useSelector((state: RootState) => state.auth.uid);
 	const navigate = useNavigate();
 
@@ -63,23 +69,44 @@ const SchedulePost: React.FC = () => {
 		navigate("/editschedule", { state: { id } });
 	};
 
-	const handleDelete = async (id: string) => {
-		if (window.confirm("일정을 삭제하시겠습니까?")) {
-			if (!userId) {
-				alert("사용자 ID가 없습니다. 삭제할 수 없습니다.");
-				return;
-			}
+	const handleDelete = (id: string) => {
+		setSelectedScheduleId(id);
+		setIsModalOpen(true);
+		setIsBgVisible(true);
+	};
 
-			try {
-				const scheduleRef = doc(db, "user", userId, "schedules", id);
-				await deleteDoc(scheduleRef);
-				setSchedules((prev) => prev.filter((schedule) => schedule.id !== id));
-				alert("일정이 삭제되었습니다.");
-			} catch (error) {
-				console.error("삭제 중 오류 발생:", error);
-				alert("삭제 중 오류가 발생했습니다.");
-			}
+	const confirmDelete = async () => {
+		if (!userId) {
+			alert("사용자 ID가 없습니다. 삭제할 수 없습니다.");
+			return;
 		}
+
+		try {
+			const scheduleRef = doc(
+				db,
+				"user",
+				userId,
+				"schedules",
+				selectedScheduleId!
+			);
+			await deleteDoc(scheduleRef);
+			setSchedules((prev) =>
+				prev.filter((schedule) => schedule.id !== selectedScheduleId)
+			);
+		} catch (error) {
+			console.error("삭제 중 오류 발생:", error);
+			alert("삭제 중 오류가 발생했습니다.");
+		} finally {
+			setIsModalOpen(false);
+			setIsBgVisible(false);
+			setSelectedScheduleId(null);
+		}
+	};
+
+	const cancelDelete = () => {
+		setIsModalOpen(false);
+		setIsBgVisible(false);
+		setSelectedScheduleId(null);
 	};
 
 	return (
@@ -133,9 +160,30 @@ const SchedulePost: React.FC = () => {
 					</ScheduleWrap>
 				</Container>
 			))}
+			{isBgVisible && <BackgroundOverlay onClick={cancelDelete} />}
+			{isModalOpen && (
+				<SelectModal
+					message="삭제하시겠습니까?"
+					confirmText="삭제"
+					cancelText="취소"
+					onConfirm={confirmDelete}
+					onCancel={cancelDelete}
+				/>
+			)}
 		</>
 	);
 };
+
+const BackgroundOverlay = styled.div`
+	position: fixed;
+	top: 0;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 390px;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.4);
+	z-index: 9;
+`;
 
 const Container = styled.div`
 	margin: 20px 0 0 0;
