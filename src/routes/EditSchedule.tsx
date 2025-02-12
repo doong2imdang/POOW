@@ -70,7 +70,6 @@ const EditSchedule: React.FC = () => {
 			prfcast: formData.prfcast,
 			poster: formData.poster,
 		});
-		alert("일정이 수정되었습니다.");
 		navigate("/schedule");
 	};
 

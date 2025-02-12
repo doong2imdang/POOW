@@ -26,6 +26,7 @@ const SchedulePost: React.FC = () => {
 	);
 	const [isBgVisible, setIsBgVisible] = useState(false);
 	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [isEditMode, setIsEditMode] = useState(false);
 	const userId = useSelector((state: RootState) => state.auth.uid);
 	const navigate = useNavigate();
 
@@ -66,44 +67,51 @@ const SchedulePost: React.FC = () => {
 	};
 
 	const handleEdit = (id: string) => {
-		navigate("/editschedule", { state: { id } });
-	};
-
-	const handleDelete = (id: string) => {
 		setSelectedScheduleId(id);
+		setIsEditMode(true);
 		setIsModalOpen(true);
 		setIsBgVisible(true);
 	};
 
-	const confirmDelete = async () => {
+	const handleDelete = (id: string) => {
+		setSelectedScheduleId(id);
+		setIsEditMode(false);
+		setIsModalOpen(true);
+		setIsBgVisible(true);
+	};
+
+	const confirmAction = async () => {
 		if (!userId) {
-			alert("사용자 ID가 없습니다. 삭제할 수 없습니다.");
+			alert("사용자 ID가 없습니다.");
 			return;
 		}
 
-		try {
-			const scheduleRef = doc(
-				db,
-				"user",
-				userId,
-				"schedules",
-				selectedScheduleId!
-			);
-			await deleteDoc(scheduleRef);
-			setSchedules((prev) =>
-				prev.filter((schedule) => schedule.id !== selectedScheduleId)
-			);
-		} catch (error) {
-			console.error("삭제 중 오류 발생:", error);
-			alert("삭제 중 오류가 발생했습니다.");
-		} finally {
-			setIsModalOpen(false);
-			setIsBgVisible(false);
-			setSelectedScheduleId(null);
+		if (isEditMode) {
+			navigate("/editschedule", { state: { id: selectedScheduleId } });
+		} else {
+			try {
+				const scheduleRef = doc(
+					db,
+					"user",
+					userId,
+					"schedules",
+					selectedScheduleId!
+				);
+				await deleteDoc(scheduleRef);
+				setSchedules((prev) =>
+					prev.filter((schedule) => schedule.id !== selectedScheduleId)
+				);
+			} catch (error) {
+				console.error("삭제 중 오류 발생:", error);
+				alert("삭제 중 오류가 발생했습니다.");
+			}
 		}
+		setIsModalOpen(false);
+		setIsBgVisible(false);
+		setSelectedScheduleId(null);
 	};
 
-	const cancelDelete = () => {
+	const cancelAction = () => {
 		setIsModalOpen(false);
 		setIsBgVisible(false);
 		setSelectedScheduleId(null);
@@ -160,14 +168,14 @@ const SchedulePost: React.FC = () => {
 					</ScheduleWrap>
 				</Container>
 			))}
-			{isBgVisible && <BackgroundOverlay onClick={cancelDelete} />}
+			{isBgVisible && <BackgroundOverlay onClick={cancelAction} />}
 			{isModalOpen && (
 				<SelectModal
-					message="삭제하시겠습니까?"
-					confirmText="삭제"
+					message={isEditMode ? "수정하시겠습니까?" : "삭제하시겠습니까?"}
+					confirmText={isEditMode ? "수정" : "삭제"}
 					cancelText="취소"
-					onConfirm={confirmDelete}
-					onCancel={cancelDelete}
+					onConfirm={confirmAction}
+					onCancel={cancelAction}
 				/>
 			)}
 		</>

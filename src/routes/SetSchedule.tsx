@@ -132,7 +132,6 @@ const SetSchedule: React.FC = () => {
 		try {
 			const userSchedulesRef = collection(db, "user", userId, "schedules");
 			const docRef = await addDoc(userSchedulesRef, scheduleToSave);
-			alert("일정이 저장되었습니다.");
 			navigate("/schedule");
 		} catch (error) {
 			console.error("일정 저장 오류:", error);
