@@ -60,7 +60,7 @@ const SchedulePost: React.FC = () => {
 	};
 
 	const handleEdit = (id: string) => {
-		//수정필요
+		navigate("/editschedule", { state: { id } });
 	};
 
 	const handleDelete = async (id: string) => {
