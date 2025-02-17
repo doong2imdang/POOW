@@ -50,7 +50,7 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
   };
 
   const handleModalConfirm = async () => {
-    console.log(`${modalType} confirmed`);
+    // console.log(`${modalType} confirmed`);
 
     if (modalType === " 로그아웃") {
       try {
@@ -61,6 +61,15 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
       } catch (e) {
         console.error("로그아웃 실패", e);
       }
+    }
+
+    if (modalType === " 수정") {
+      console.log("수정");
+      navigate("/setmood", { state: { mood: selectedMood } });
+    }
+
+    if (modalType === "삭제") {
+      console.log("삭제");
     }
 
     handleCloseModal();

@@ -9,7 +9,7 @@ import { RootState } from "../redux/store";
 import { addDoc, collection, doc, getDocs, setDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export default function SetMood() {
   const [disabled, setDisabled] = useState<boolean>(true);
@@ -21,6 +21,10 @@ export default function SetMood() {
   const categoryListRef = useRef<HTMLUListElement>(null);
   const userId = useSelector((state: RootState) => state.auth.uid);
   const navigate = useNavigate();
+  const location = useLocation();
+  const selectedMood = location.state?.mood;
+
+  console.log(selectedMood, "selectedMood");
 
   // 초기 카테고리 목록
   useEffect(() => {
