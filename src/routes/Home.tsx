@@ -120,20 +120,6 @@ export default function Home() {
     };
   }, []);
 
-  // 카테고리 입력 시
-  const handleCategoryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCategory(e.target.value);
-  };
-
-  // 카테고리 Enter로 등록
-  const handleCategoryKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && category.trim() !== "") {
-      if (!categoryList.includes(category.trim())) {
-        setCategoryList((prev) => [...prev, category.trim()]);
-      }
-    }
-  };
-
   // 카테고리 선택 시
   const handleCategorySelect = (selectedCategory: string) => {
     setCategory(selectedCategory);
@@ -167,10 +153,9 @@ export default function Home() {
             <CategoryStyle $isFocused={isFocused}>
               <CategoryInput
                 type="text"
-                placeholder="카테고리"
+                placeholder="전체"
                 value={category}
-                onChange={handleCategoryChange}
-                onKeyPress={handleCategoryKeyPress}
+                readOnly
                 onFocus={() => {
                   setCategory("");
                   setIsFocused(true);
