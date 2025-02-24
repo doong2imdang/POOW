@@ -7,8 +7,9 @@ import { signOut } from "firebase/auth";
 import { auth, db } from "../firebase";
 import { useNavigate } from "react-router-dom";
 import { Mood } from "../routes/Home";
-import { collection, deleteDoc, doc } from "firebase/firestore";
+import { deleteDoc, doc } from "firebase/firestore";
 import { RootState } from "../redux/store";
+import { setMoods } from "../redux/moodSlice";
 
 interface BottomSheetProps {
   text?: string;
@@ -25,6 +26,7 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
   const navigate = useNavigate();
 
   const userId = useSelector((state: RootState) => state.auth.uid);
+  const moods = useSelector((state: RootState) => state.moods.moods);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState<string | null>(null);
   const [confirmText, setConfirmText] = useState<string>("");
@@ -90,6 +92,9 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
 
         await deleteDoc(moodDocRef);
         console.log("무드 삭제 완료");
+
+        // redux에서 상태 업데이트
+        dispatch(setMoods(moods.filter((mood) => mood.id !== selectedMood.id)));
       } catch (e) {
         console.error("무드 삭제 중 오류 발생", e);
       }
