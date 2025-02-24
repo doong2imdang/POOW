@@ -27,6 +27,7 @@ export interface Mood {
   createdAt: any;
   category: string;
   currentImageIndex: number;
+  id: string;
 }
 
 export default function Home() {
@@ -75,6 +76,7 @@ export default function Home() {
             );
             const documentsSnapshot = await getDocs(documentsCollectionRef);
             const moodsData = documentsSnapshot.docs.map((doc) => ({
+              id: doc.id,
               ...doc.data(),
               category: categoryId,
               currentImageIndex: 0,
