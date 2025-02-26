@@ -6,7 +6,14 @@ import iconUploadFile from "../assets/images/icon-image-upload.svg";
 import iconDelete from "../assets/images/icon-delete-white.svg";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
-import { addDoc, collection, doc, getDocs, setDoc } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDocs,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
 import { db } from "../firebase";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -145,8 +152,6 @@ export default function SetMood() {
     try {
       const storage = getStorage();
       const userRef = doc(db, "user", userId);
-
-      // 카테고리 문서 참조 생성
       const categoryDocRef = doc(userRef, "mood", category);
 
       // category 문서가 존재하지 않으면 생성
@@ -155,29 +160,63 @@ export default function SetMood() {
       // 카테고리 문서의 documents 컬렉션 참조
       const documentsCollectionRef = collection(categoryDocRef, "documents");
 
-      // 업로드된 파일의 URL을 저장할 배열
-      const fileURLs: string[] = [];
+      // 현재 수정 중인 문서 ID가 있는지 확인 (수정 모드인지 체크)
+      if (selectedMood?.id) {
+        // 기존 문서 참조 가져오기
+        const existingDocRef = doc(documentsCollectionRef, selectedMood.id);
 
-      for (const file of uploadedFiles) {
-        // Storage에 파일 업로드
-        const fileRef = ref(storage, `mood/${userId}/${category}/${file.name}`);
-        await uploadBytes(fileRef, file);
+        // 업로드된 파일의 URL을 저장할 배열
+        const fileURLs: string[] = [...(selectedMood.fileURLs || [])];
 
-        // 업로드된 파일의 URL 가져오기
-        const fileURL = await getDownloadURL(fileRef);
-        fileURLs.push(fileURL);
+        // 새로 추가된 파일을 Firebase Storage에 업로드
+        for (const file of uploadedFiles) {
+          if (typeof file !== "string") {
+            // 새 파일인 경우에만 업로드
+            const fileRef = ref(
+              storage,
+              `mood/${userId}/${category}/${file.name}`
+            );
+            await uploadBytes(fileRef, file);
+
+            // 업로드된 파일의 URL 가져오기
+            const fileURL = await getDownloadURL(fileRef);
+            fileURLs.push(fileURL);
+          }
+        }
+
+        // 기존 문서 업데이트
+        await updateDoc(existingDocRef, {
+          fileURLs,
+          textAreaValue,
+          updatedAt: new Date(), // 수정된 시간 기록
+        });
+
+        console.log("수정 완료:", selectedMood.id);
+      } else {
+        // 새 문서 추가
+        const fileURLs: string[] = [];
+
+        for (const file of uploadedFiles) {
+          const fileRef = ref(
+            storage,
+            `mood/${userId}/${category}/${file.name}`
+          );
+          await uploadBytes(fileRef, file);
+
+          const fileURL = await getDownloadURL(fileRef);
+          fileURLs.push(fileURL);
+        }
+
+        const data = {
+          fileURLs,
+          textAreaValue,
+          createdAt: new Date(),
+        };
+
+        const newDocRef = await addDoc(documentsCollectionRef, data);
+        console.log("새 게시글 저장 완료:", newDocRef.id);
       }
 
-      // Firestore에 한 번만 문서 저장
-      const data = {
-        fileURLs,
-        textAreaValue,
-        createdAt: new Date(),
-      };
-
-      // documents 컬렉션에 새 문서 추가
-      const newDocRef = await addDoc(documentsCollectionRef, data);
-      console.log("저장완료:", newDocRef.id);
       navigate("/mood");
     } catch (e) {
       console.error("저장 중 오류 발생", e);
