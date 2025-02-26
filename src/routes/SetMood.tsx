@@ -16,6 +16,7 @@ export default function SetMood() {
   const [category, setCategory] = useState<string>("");
   const [categoryList, setCategoryList] = useState<string[]>([]);
   const [isFocused, setIsFocused] = useState<boolean>(false);
+  const [fileURLs, setFileURLs] = useState([]);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [textAreaValue, setTextAreaValue] = useState<string>("");
   const categoryListRef = useRef<HTMLUListElement>(null);
@@ -25,6 +26,15 @@ export default function SetMood() {
   const selectedMood = location.state?.mood;
 
   console.log(selectedMood, "selectedMood");
+
+  useEffect(() => {
+    if (userId && selectedMood) {
+      setCategory(selectedMood.category);
+      setFileURLs(selectedMood.fileURLs || []);
+      setUploadedFiles([]);
+      setTextAreaValue(selectedMood.textAreaValue);
+    }
+  }, [userId, selectedMood]);
 
   // 초기 카테고리 목록
   useEffect(() => {
@@ -220,10 +230,12 @@ export default function SetMood() {
           onChange={handleTextAreaChange}
         ></TextAreaStyle>
         <UploadedFileContainer>
-          {uploadedFiles.map((file, index) => (
+          {[...uploadedFiles, ...fileURLs].map((file, index) => (
             <FilePreview key={index}>
               <img
-                src={URL.createObjectURL(file)}
+                src={
+                  typeof file === "string" ? file : URL.createObjectURL(file)
+                }
                 alt={`업로드된 파일 ${index + 1}`}
               />
               <button type="button" onClick={() => handleDeleteFile(index)}>
