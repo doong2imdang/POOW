@@ -23,7 +23,7 @@ export default function SetMood() {
   const [category, setCategory] = useState<string>("");
   const [categoryList, setCategoryList] = useState<string[]>([]);
   const [isFocused, setIsFocused] = useState<boolean>(false);
-  const [fileURLs, setFileURLs] = useState([]);
+  const [fileURLs, setFileURLs] = useState<string[]>([]);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [textAreaValue, setTextAreaValue] = useState<string>("");
   const categoryListRef = useRef<HTMLUListElement>(null);
@@ -144,8 +144,6 @@ export default function SetMood() {
 
   // 저장하기
   const handleSave = async () => {
-    console.log(category, uploadedFiles, textAreaValue);
-
     if (!userId) {
       console.error("사용자가 로그인되지 않았습니다.");
       return;
@@ -167,55 +165,35 @@ export default function SetMood() {
       // 카테고리 문서의 documents 컬렉션 참조
       const documentsCollectionRef = collection(categoryDocRef, "documents");
 
-      // 현재 수정 중인 문서 ID가 있는지 확인 (수정 모드인지 체크)
-      if (selectedMood?.id) {
-        // 기존 문서 참조 가져오기
-        const existingDocRef = doc(documentsCollectionRef, selectedMood.id);
+      // 기존 파일 URL을 유지한 상태에서 새롭게 업로드할 파일만 추가
+      let updatedFileURLs = [...fileURLs];
 
-        // 업로드된 파일의 URL을 저장할 배열
-        const fileURLs: string[] = [...(selectedMood.fileURLs || [])];
-
-        // 새로 추가된 파일을 Firebase Storage에 업로드
-        for (const file of uploadedFiles) {
-          if (typeof file !== "string") {
-            // 새 파일인 경우에만 업로드
-            const fileRef = ref(
-              storage,
-              `mood/${userId}/${category}/${file.name}`
-            );
-            await uploadBytes(fileRef, file);
-
-            // 업로드된 파일의 URL 가져오기
-            const fileURL = await getDownloadURL(fileRef);
-            fileURLs.push(fileURL);
-          }
-        }
-
-        // 기존 문서 업데이트
-        await updateDoc(existingDocRef, {
-          fileURLs,
-          textAreaValue,
-          updatedAt: new Date(), // 수정된 시간 기록
-        });
-
-        console.log("수정 완료:", selectedMood.id);
-      } else {
-        // 새 문서 추가
-        const fileURLs: string[] = [];
-
-        for (const file of uploadedFiles) {
+      for (const file of uploadedFiles) {
+        if (typeof file !== "string") {
           const fileRef = ref(
             storage,
             `mood/${userId}/${category}/${file.name}`
           );
           await uploadBytes(fileRef, file);
-
           const fileURL = await getDownloadURL(fileRef);
-          fileURLs.push(fileURL);
+          updatedFileURLs.push(fileURL);
         }
+      }
 
+      if (selectedMood?.id) {
+        const existingDocRef = doc(documentsCollectionRef, selectedMood.id);
+
+        // 최신 상태값을 사용하여 업데이트
+        await updateDoc(existingDocRef, {
+          fileURLs: updatedFileURLs,
+          textAreaValue,
+          updatedAt: new Date(),
+        });
+
+        console.log("수정 완료:", selectedMood.id);
+      } else {
         const data = {
-          fileURLs,
+          fileURLs: updatedFileURLs,
           textAreaValue,
           createdAt: new Date(),
         };
