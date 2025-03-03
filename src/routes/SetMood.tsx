@@ -6,7 +6,14 @@ import iconUploadFile from "../assets/images/icon-image-upload.svg";
 import iconDelete from "../assets/images/icon-delete-white.svg";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
-import { addDoc, collection, doc, getDocs, setDoc } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDocs,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
 import { db } from "../firebase";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -16,6 +23,7 @@ export default function SetMood() {
   const [category, setCategory] = useState<string>("");
   const [categoryList, setCategoryList] = useState<string[]>([]);
   const [isFocused, setIsFocused] = useState<boolean>(false);
+  const [fileURLs, setFileURLs] = useState<string[]>([]);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [textAreaValue, setTextAreaValue] = useState<string>("");
   const categoryListRef = useRef<HTMLUListElement>(null);
@@ -25,6 +33,15 @@ export default function SetMood() {
   const selectedMood = location.state?.mood;
 
   console.log(selectedMood, "selectedMood");
+
+  useEffect(() => {
+    if (userId && selectedMood) {
+      setCategory(selectedMood.category);
+      setFileURLs(selectedMood.fileURLs || []);
+      setUploadedFiles([]);
+      setTextAreaValue(selectedMood.textAreaValue);
+    }
+  }, [userId, selectedMood]);
 
   // 초기 카테고리 목록
   useEffect(() => {
@@ -98,7 +115,14 @@ export default function SetMood() {
 
   // 파일 삭제
   const handleDeleteFile = (index: number) => {
-    setUploadedFiles((prev) => prev.filter((_, i) => i !== index));
+    if (index < fileURLs.length) {
+      // 기존 파일 삭제 (fileURLs에 있는 경우)
+      setFileURLs((prev) => prev.filter((_, i) => i !== index));
+    } else {
+      // 새로 업로드한 파일 삭제 (uploadedFiles에 있는 경우)
+      const newIndex = index - fileURLs.length;
+      setUploadedFiles((prev) => prev.filter((_, i) => i !== newIndex));
+    }
   };
 
   // textarea 변경
@@ -120,8 +144,6 @@ export default function SetMood() {
 
   // 저장하기
   const handleSave = async () => {
-    console.log(category, uploadedFiles, textAreaValue);
-
     if (!userId) {
       console.error("사용자가 로그인되지 않았습니다.");
       return;
@@ -135,8 +157,6 @@ export default function SetMood() {
     try {
       const storage = getStorage();
       const userRef = doc(db, "user", userId);
-
-      // 카테고리 문서 참조 생성
       const categoryDocRef = doc(userRef, "mood", category);
 
       // category 문서가 존재하지 않으면 생성
@@ -145,29 +165,43 @@ export default function SetMood() {
       // 카테고리 문서의 documents 컬렉션 참조
       const documentsCollectionRef = collection(categoryDocRef, "documents");
 
-      // 업로드된 파일의 URL을 저장할 배열
-      const fileURLs: string[] = [];
+      // 기존 파일 URL을 유지한 상태에서 새롭게 업로드할 파일만 추가
+      let updatedFileURLs = [...fileURLs];
 
       for (const file of uploadedFiles) {
-        // Storage에 파일 업로드
-        const fileRef = ref(storage, `mood/${userId}/${category}/${file.name}`);
-        await uploadBytes(fileRef, file);
-
-        // 업로드된 파일의 URL 가져오기
-        const fileURL = await getDownloadURL(fileRef);
-        fileURLs.push(fileURL);
+        if (typeof file !== "string") {
+          const fileRef = ref(
+            storage,
+            `mood/${userId}/${category}/${file.name}`
+          );
+          await uploadBytes(fileRef, file);
+          const fileURL = await getDownloadURL(fileRef);
+          updatedFileURLs.push(fileURL);
+        }
       }
 
-      // Firestore에 한 번만 문서 저장
-      const data = {
-        fileURLs,
-        textAreaValue,
-        createdAt: new Date(),
-      };
+      if (selectedMood?.id) {
+        const existingDocRef = doc(documentsCollectionRef, selectedMood.id);
 
-      // documents 컬렉션에 새 문서 추가
-      const newDocRef = await addDoc(documentsCollectionRef, data);
-      console.log("저장완료:", newDocRef.id);
+        // 최신 상태값을 사용하여 업데이트
+        await updateDoc(existingDocRef, {
+          fileURLs: updatedFileURLs,
+          textAreaValue,
+          updatedAt: new Date(),
+        });
+
+        console.log("수정 완료:", selectedMood.id);
+      } else {
+        const data = {
+          fileURLs: updatedFileURLs,
+          textAreaValue,
+          createdAt: new Date(),
+        };
+
+        const newDocRef = await addDoc(documentsCollectionRef, data);
+        console.log("새 게시글 저장 완료:", newDocRef.id);
+      }
+
       navigate("/mood");
     } catch (e) {
       console.error("저장 중 오류 발생", e);
@@ -220,10 +254,12 @@ export default function SetMood() {
           onChange={handleTextAreaChange}
         ></TextAreaStyle>
         <UploadedFileContainer>
-          {uploadedFiles.map((file, index) => (
+          {[...uploadedFiles, ...fileURLs].map((file, index) => (
             <FilePreview key={index}>
               <img
-                src={URL.createObjectURL(file)}
+                src={
+                  typeof file === "string" ? file : URL.createObjectURL(file)
+                }
                 alt={`업로드된 파일 ${index + 1}`}
               />
               <button type="button" onClick={() => handleDeleteFile(index)}>
