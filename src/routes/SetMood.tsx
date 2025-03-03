@@ -115,7 +115,14 @@ export default function SetMood() {
 
   // 파일 삭제
   const handleDeleteFile = (index: number) => {
-    setUploadedFiles((prev) => prev.filter((_, i) => i !== index));
+    if (index < fileURLs.length) {
+      // 기존 파일 삭제 (fileURLs에 있는 경우)
+      setFileURLs((prev) => prev.filter((_, i) => i !== index));
+    } else {
+      // 새로 업로드한 파일 삭제 (uploadedFiles에 있는 경우)
+      const newIndex = index - fileURLs.length;
+      setUploadedFiles((prev) => prev.filter((_, i) => i !== newIndex));
+    }
   };
 
   // textarea 변경
