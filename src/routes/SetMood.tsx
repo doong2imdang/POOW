@@ -9,10 +9,11 @@ import { RootState } from "../redux/store";
 import {
   addDoc,
   collection,
+  deleteDoc,
   doc,
+  getDoc,
   getDocs,
   setDoc,
-  updateDoc,
 } from "firebase/firestore";
 import { db } from "../firebase";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
@@ -157,17 +158,30 @@ export default function SetMood() {
     try {
       const storage = getStorage();
       const userRef = doc(db, "user", userId);
-      const categoryDocRef = doc(userRef, "mood", category);
 
-      // category 문서가 존재하지 않으면 생성
-      await setDoc(categoryDocRef, { name: category }, { merge: true });
+      const oldCategory = selectedMood?.category;
+      const oldCategoryDocRef = oldCategory
+        ? doc(userRef, "mood", oldCategory)
+        : null;
+      const oldDocumentsCollectionRef = oldCategoryDocRef
+        ? collection(oldCategoryDocRef, "documents")
+        : null;
+      const oldDocumentRef =
+        oldDocumentsCollectionRef && selectedMood?.id
+          ? doc(oldDocumentsCollectionRef, selectedMood.id)
+          : null;
 
-      // 카테고리 문서의 documents 컬렉션 참조
-      const documentsCollectionRef = collection(categoryDocRef, "documents");
+      const newCategoryDocRef = doc(userRef, "mood", category);
+      await setDoc(newCategoryDocRef, { name: category }, { merge: true });
 
-      // 기존 파일 URL을 유지한 상태에서 새롭게 업로드할 파일만 추가
+      const newDocumentsCollectionRef = collection(
+        newCategoryDocRef,
+        "documents"
+      );
+
       let updatedFileURLs = [...fileURLs];
 
+      // 새로 업로드한 파일 처리
       for (const file of uploadedFiles) {
         if (typeof file !== "string") {
           const fileRef = ref(
@@ -181,24 +195,36 @@ export default function SetMood() {
       }
 
       if (selectedMood?.id) {
-        const existingDocRef = doc(documentsCollectionRef, selectedMood.id);
+        // 문서 데이터 가져오기
+        const docSnapshot = await getDoc(oldDocumentRef!);
+        const oldData = docSnapshot.exists() ? docSnapshot.data() : null;
 
-        // 최신 상태값을 사용하여 업데이트
-        await updateDoc(existingDocRef, {
-          fileURLs: updatedFileURLs,
-          textAreaValue,
-          updatedAt: new Date(),
-        });
+        if (oldData) {
+          // 기존 데이터 복사 후 category 변경하여 새 카테고리에 추가
+          const newDocRef = doc(newDocumentsCollectionRef, selectedMood.id);
+          await setDoc(newDocRef, {
+            ...oldData,
+            fileURLs: updatedFileURLs,
+            textAreaValue,
+            updatedAt: new Date(),
+            category, // 카테고리 업데이트
+          });
 
-        console.log("수정 완료:", selectedMood.id);
+          // 기존 문서 삭제
+          if (oldCategory !== category && oldDocumentRef) {
+            await deleteDoc(oldDocumentRef);
+          }
+        }
       } else {
+        // 새 문서 생성
         const data = {
           fileURLs: updatedFileURLs,
           textAreaValue,
           createdAt: new Date(),
+          category,
         };
 
-        const newDocRef = await addDoc(documentsCollectionRef, data);
+        const newDocRef = await addDoc(newDocumentsCollectionRef, data);
         console.log("새 게시글 저장 완료:", newDocRef.id);
       }
 
