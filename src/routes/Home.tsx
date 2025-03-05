@@ -151,7 +151,7 @@ export default function Home() {
       <Header main />
       <MainStyle>
         <CategoryContainer>
-          {filteredMoods.length > 0 ? (
+          {moods.length > 0 ? (
             <CategoryStyle $isFocused={isFocused}>
               <CategoryInput
                 type="text"
@@ -198,7 +198,7 @@ export default function Home() {
         </CategoryContainer>
         <MyMoodStyle>
           <MoodList>
-            {filteredMoods.length > 0 ? (
+            {moods.length > 0 ? (
               filteredMoods.map((mood, index) => {
                 const date = mood.createdAt.toDate();
                 const formattedDate = date.toLocaleDateString("ko-KR", {
