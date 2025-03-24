@@ -1,16 +1,52 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import iconPostListOn from "../assets/images/icon-post-list-on.svg";
 import iconPostListOff from "../assets/images/icon-post-list-off.svg";
 import iconPostAlbumOn from "../assets/images/icon-post-album-on.svg";
 import iconPostAlbumOff from "../assets/images/icon-post-album-off.svg";
 import iconSMoreVertical from "../assets/images/s-icon-more-vertical.svg";
+import iconLeftSlide from "../assets/images/icon-left-slide.svg";
+import iconRightSlide from "../assets/images/icon-right-slide.svg";
+import symbolLogoGray from "../assets/images/symbol-logo-gray.svg";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
+import {
+  BtnDotStyle,
+  EmptyMoodContainer,
+  ImageSliderStyle,
+  Mood,
+} from "../routes/Home";
+import { useNavigate } from "react-router-dom";
 
 export default function MyMood() {
   const moods = useSelector((state: RootState) => state.moods.moods);
   console.log(moods);
+  const navigate = useNavigate();
+  const [isBottomSheet, setIsBottomSheet] = useState<boolean>(false);
+  const [selectedMood, setSelectedMood] = useState<Mood | null>(null);
+  const [filteredMoods, setFilteredMoods] = useState<Mood[]>([]);
+
+  // moods 데이터가 변경될 떄마다 filteredMoods 업데이트
+  useEffect(() => {
+    setFilteredMoods(moods);
+  }, [moods]);
+
+  // 바텀시트 토글 함수
+  const toggleBottomSheet = (mood: Mood | null = null) => {
+    setSelectedMood(mood);
+    setIsBottomSheet((prev) => !prev);
+  };
+
+  // 이미지 인덱스 변경
+  const handleImageIndexChange = (moodIndex: number, newIndex: number) => {
+    setFilteredMoods((prev) =>
+      prev.map((mood, index) =>
+        index === moodIndex ? { ...mood, currentImageIndex: newIndex } : mood
+      )
+    );
+
+    // console.log(filteredMoods, "filteredMoods");
+  };
 
   return (
     <MyMoodStyle>
@@ -23,40 +59,105 @@ export default function MyMood() {
         </button>
       </PostDisplayToggle>
       <MoodList>
-        <li>
-          <button type="button">
-            <img src={iconSMoreVertical} alt="바텀시트 열기 버튼" />
-          </button>
-          <span>
-            국회는 의장 1인과 부의장 2인을 선출한다. 모든 국민은 신체의 자유를
-            가진다. 누구든지 법률에 의하지 아니하고는 체포·구속·압수·수색 또는
-            심문을 받지 아니하며, 법률과 적법한 절차에 의하지 아니하고는
-            처벌·보안처분 또는 강제노역을 받지 아니한다.
-          </span>
-          <img src="" alt="무드 이미지" />
-          <p>
-            <span>2024년</span>
-            <span>10월</span>
-            <span>4일</span>
-          </p>
-        </li>
-        <li>
-          <button type="button">
-            <img src={iconSMoreVertical} alt="바텀시트 열기 버튼" />
-          </button>
-          <span>
-            국회는 의장 1인과 부의장 2인을 선출한다. 모든 국민은 신체의 자유를
-            가진다. 누구든지 법률에 의하지 아니하고는 체포·구속·압수·수색 또는
-            심문을 받지 아니하며, 법률과 적법한 절차에 의하지 아니하고는
-            처벌·보안처분 또는 강제노역을 받지 아니한다.
-          </span>
-          <img src="" alt="무드 이미지" />
-          <p>
-            <span>2024년</span>
-            <span>10월</span>
-            <span>4일</span>
-          </p>
-        </li>
+        {moods.length > 0 ? (
+          filteredMoods.map((mood, index) => {
+            const date = mood.createdAt.toDate();
+            const formattedDate = date.toLocaleDateString("ko-KR", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            });
+
+            return (
+              <li key={index}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    toggleBottomSheet(mood);
+                  }}
+                >
+                  <img src={iconSMoreVertical} alt="바텀시트 열기 버튼" />
+                </button>
+                <span>{mood.textAreaValue}</span>
+                {mood.fileURLs.length > 0 && (
+                  <div>
+                    <ImageSliderStyle>
+                      {mood.fileURLs.length > 1 &&
+                        mood.currentImageIndex !== 0 && (
+                          <button
+                            onClick={() =>
+                              handleImageIndexChange(
+                                index,
+                                mood.currentImageIndex === 0
+                                  ? mood.fileURLs.length - 1
+                                  : mood.currentImageIndex - 1
+                              )
+                            }
+                            type="button"
+                          >
+                            <img src={iconLeftSlide} alt="" />
+                          </button>
+                        )}
+                      <div className="image-container">
+                        <img
+                          src={mood.fileURLs[mood.currentImageIndex]}
+                          alt="무드 이미지"
+                        />
+                      </div>
+
+                      {mood.fileURLs.length > 1 &&
+                        mood.currentImageIndex >= 0 &&
+                        mood.currentImageIndex !== mood.fileURLs.length - 1 && (
+                          <button
+                            onClick={() =>
+                              handleImageIndexChange(
+                                index,
+                                mood.currentImageIndex ===
+                                  mood.fileURLs.length - 1
+                                  ? 0
+                                  : mood.currentImageIndex + 1
+                              )
+                            }
+                            type="button"
+                          >
+                            <img src={iconRightSlide} alt="" />
+                          </button>
+                        )}
+                    </ImageSliderStyle>
+                  </div>
+                )}
+                <p>
+                  <span>{formattedDate}</span>
+                </p>
+                <BtnDotStyle>
+                  {mood.fileURLs.length > 1 &&
+                    mood.fileURLs.map((url: string, dotIndex: number) => (
+                      <button
+                        key={dotIndex}
+                        type="button"
+                        className={
+                          mood.currentImageIndex === dotIndex ? "active" : ""
+                        }
+                      ></button>
+                    ))}
+                </BtnDotStyle>
+              </li>
+            );
+          })
+        ) : (
+          <EmptyMoodContainer>
+            <img src={symbolLogoGray} alt="" />
+            <p>mood를 등록해보세요!</p>
+            <button
+              type="button"
+              onClick={() => {
+                navigate("/setmood");
+              }}
+            >
+              mood 등록
+            </button>
+          </EmptyMoodContainer>
+        )}
       </MoodList>
     </MyMoodStyle>
   );
