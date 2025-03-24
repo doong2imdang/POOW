@@ -93,8 +93,6 @@ export default function Home() {
     fetchCategoriesAndMoods();
   }, [userId, dispatch]);
 
-  console.log(moods);
-
   // 카테고리가 변경될 때 무드 필터링
   useEffect(() => {
     if (category) {
@@ -136,7 +134,7 @@ export default function Home() {
       )
     );
 
-    console.log(filteredMoods);
+    // console.log(filteredMoods, "filteredMoods Home");
   };
 
   return (
@@ -320,7 +318,7 @@ const CategoryContainer = styled.div`
   position: relative;
 `;
 
-const BtnDotStyle = styled.div`
+export const BtnDotStyle = styled.div`
   position: absolute;
   left: 50%;
   transform: translate(-50%, 315px);
@@ -338,7 +336,7 @@ const BtnDotStyle = styled.div`
   }
 `;
 
-const ImageSliderStyle = styled.div`
+export const ImageSliderStyle = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -373,7 +371,7 @@ const ImageSliderStyle = styled.div`
   }
 `;
 
-const EmptyMoodContainer = styled.div`
+export const EmptyMoodContainer = styled.div`
   display: flex;
   flex-direction: column;
   height: 100vh;
