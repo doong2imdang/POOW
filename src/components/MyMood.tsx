@@ -26,6 +26,7 @@ export default function MyMood() {
   const [isBottomSheet, setIsBottomSheet] = useState<boolean>(false);
   const [selectedMood, setSelectedMood] = useState<Mood | null>(null);
   const [filteredMoods, setFilteredMoods] = useState<Mood[]>([]);
+  const [viewMode, setViewMode] = useState<"list" | "album">("list");
 
   // moods 데이터가 변경될 떄마다 filteredMoods 업데이트
   useEffect(() => {
@@ -60,115 +61,133 @@ export default function MyMood() {
       )}
       <MyMoodStyle>
         <PostDisplayToggle>
-          <button type="button">
-            <img src={iconPostListOn} alt="리스트형식버튼" />
+          <button type="button" onClick={() => setViewMode("list")}>
+            <img
+              src={viewMode === "list" ? iconPostListOn : iconPostListOff}
+              alt="리스트형식버튼"
+            />
           </button>
-          <button type="button">
-            <img src={iconPostAlbumOff} alt="앨범형식버튼" />
+          <button type="button" onClick={() => setViewMode("album")}>
+            <img
+              src={viewMode === "album" ? iconPostAlbumOn : iconPostAlbumOff}
+              alt="앨범형식버튼"
+            />
           </button>
         </PostDisplayToggle>
-        <MoodList>
-          {moods.length > 0 ? (
-            filteredMoods.map((mood, index) => {
-              const date = mood.createdAt.toDate();
-              const formattedDate = date.toLocaleDateString("ko-KR", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              });
+        {viewMode === "list" ? (
+          <MoodList>
+            {moods.length > 0 ? (
+              filteredMoods.map((mood, index) => {
+                const date = mood.createdAt.toDate();
+                const formattedDate = date.toLocaleDateString("ko-KR", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                });
 
-              return (
-                <li key={index}>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      toggleBottomSheet(mood);
-                    }}
-                  >
-                    <img src={iconSMoreVertical} alt="바텀시트 열기 버튼" />
-                  </button>
-                  <span>{mood.textAreaValue}</span>
-                  {mood.fileURLs.length > 0 && (
-                    <div>
-                      <ImageSliderStyle>
-                        {mood.fileURLs.length > 1 &&
-                          mood.currentImageIndex !== 0 && (
-                            <button
-                              onClick={() =>
-                                handleImageIndexChange(
-                                  index,
-                                  mood.currentImageIndex === 0
-                                    ? mood.fileURLs.length - 1
-                                    : mood.currentImageIndex - 1
-                                )
-                              }
-                              type="button"
-                            >
-                              <img src={iconLeftSlide} alt="" />
-                            </button>
-                          )}
-                        <div className="image-container">
-                          <img
-                            src={mood.fileURLs[mood.currentImageIndex]}
-                            alt="무드 이미지"
-                          />
-                        </div>
+                return (
+                  <li key={index}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        toggleBottomSheet(mood);
+                      }}
+                    >
+                      <img src={iconSMoreVertical} alt="바텀시트 열기 버튼" />
+                    </button>
+                    <span>{mood.textAreaValue}</span>
+                    {mood.fileURLs.length > 0 && (
+                      <div>
+                        <ImageSliderStyle>
+                          {mood.fileURLs.length > 1 &&
+                            mood.currentImageIndex !== 0 && (
+                              <button
+                                onClick={() =>
+                                  handleImageIndexChange(
+                                    index,
+                                    mood.currentImageIndex === 0
+                                      ? mood.fileURLs.length - 1
+                                      : mood.currentImageIndex - 1
+                                  )
+                                }
+                                type="button"
+                              >
+                                <img src={iconLeftSlide} alt="" />
+                              </button>
+                            )}
+                          <div className="image-container">
+                            <img
+                              src={mood.fileURLs[mood.currentImageIndex]}
+                              alt="무드 이미지"
+                            />
+                          </div>
 
-                        {mood.fileURLs.length > 1 &&
-                          mood.currentImageIndex >= 0 &&
-                          mood.currentImageIndex !==
-                            mood.fileURLs.length - 1 && (
-                            <button
-                              onClick={() =>
-                                handleImageIndexChange(
-                                  index,
-                                  mood.currentImageIndex ===
-                                    mood.fileURLs.length - 1
-                                    ? 0
-                                    : mood.currentImageIndex + 1
-                                )
-                              }
-                              type="button"
-                            >
-                              <img src={iconRightSlide} alt="" />
-                            </button>
-                          )}
-                      </ImageSliderStyle>
-                    </div>
-                  )}
-                  <p>
-                    <span>{formattedDate}</span>
-                  </p>
-                  <BtnDotStyle>
-                    {mood.fileURLs.length > 1 &&
-                      mood.fileURLs.map((url: string, dotIndex: number) => (
-                        <button
-                          key={dotIndex}
-                          type="button"
-                          className={
-                            mood.currentImageIndex === dotIndex ? "active" : ""
-                          }
-                        ></button>
-                      ))}
-                  </BtnDotStyle>
-                </li>
-              );
-            })
-          ) : (
-            <EmptyMoodContainer>
-              <img src={symbolLogoGray} alt="" />
-              <p>mood를 등록해보세요!</p>
-              <button
-                type="button"
-                onClick={() => {
-                  navigate("/setmood");
-                }}
-              >
-                mood 등록
-              </button>
-            </EmptyMoodContainer>
-          )}
-        </MoodList>
+                          {mood.fileURLs.length > 1 &&
+                            mood.currentImageIndex >= 0 &&
+                            mood.currentImageIndex !==
+                              mood.fileURLs.length - 1 && (
+                              <button
+                                onClick={() =>
+                                  handleImageIndexChange(
+                                    index,
+                                    mood.currentImageIndex ===
+                                      mood.fileURLs.length - 1
+                                      ? 0
+                                      : mood.currentImageIndex + 1
+                                  )
+                                }
+                                type="button"
+                              >
+                                <img src={iconRightSlide} alt="" />
+                              </button>
+                            )}
+                        </ImageSliderStyle>
+                      </div>
+                    )}
+                    <p>
+                      <span>{formattedDate}</span>
+                    </p>
+                    <BtnDotStyle>
+                      {mood.fileURLs.length > 1 &&
+                        mood.fileURLs.map((url: string, dotIndex: number) => (
+                          <button
+                            key={dotIndex}
+                            type="button"
+                            className={
+                              mood.currentImageIndex === dotIndex
+                                ? "active"
+                                : ""
+                            }
+                          ></button>
+                        ))}
+                    </BtnDotStyle>
+                  </li>
+                );
+              })
+            ) : (
+              <EmptyMoodContainer>
+                <img src={symbolLogoGray} alt="" />
+                <p>mood를 등록해보세요!</p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigate("/setmood");
+                  }}
+                >
+                  mood 등록
+                </button>
+              </EmptyMoodContainer>
+            )}
+          </MoodList>
+        ) : (
+          <MoodAlbum>
+            {filteredMoods.map((mood, index) => (
+              <div key={index} className="album-item">
+                <img src={mood.fileURLs[0]} alt="앨범형 mood 이미지" />
+              </div>
+            ))}
+          </MoodAlbum>
+        )}
       </MyMoodStyle>
     </>
   );
@@ -179,6 +198,7 @@ export const MyMoodStyle = styled.div`
   display: flex;
   flex-direction: column;
   position: relative;
+  height: 100%;
 `;
 
 const PostDisplayToggle = styled.div`
@@ -243,5 +263,24 @@ export const MoodList = styled.ul`
     &:last-child {
       border-bottom: none;
     }
+  }
+`;
+
+const MoodAlbum = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  padding: 16px;
+
+  .album-item {
+    width: 100%;
+    height: 100px;
+    overflow: hidden;
+  }
+
+  .album-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 `;
