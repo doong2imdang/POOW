@@ -8,6 +8,7 @@ import iconSMoreVertical from "../assets/images/s-icon-more-vertical.svg";
 import iconLeftSlide from "../assets/images/icon-left-slide.svg";
 import iconRightSlide from "../assets/images/icon-right-slide.svg";
 import symbolLogoGray from "../assets/images/symbol-logo-gray.svg";
+import iconImgLayers from "../assets/images/iccon-img-layers.svg";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 import {
@@ -183,7 +184,18 @@ export default function MyMood() {
           <MoodAlbum>
             {filteredMoods.map((mood, index) => (
               <div key={index} className="album-item">
-                <img src={mood.fileURLs[0]} alt="앨범형 mood 이미지" />
+                <img
+                  src={mood.fileURLs[0]}
+                  className="album-item-img"
+                  alt="앨범형 mood 이미지"
+                />
+                {mood.fileURLs.length > 1 && (
+                  <img
+                    src={iconImgLayers}
+                    className="has-multiple-items"
+                    alt="해당mood에 파일이 2개이상일 경우"
+                  />
+                )}
               </div>
             ))}
           </MoodAlbum>
@@ -272,6 +284,7 @@ const MoodAlbum = styled.div`
   grid-template-columns: repeat(3, 1fr);
   gap: 8px;
   padding: 16px;
+  position: relative;
 
   .album-item {
     width: 100%;
@@ -280,9 +293,14 @@ const MoodAlbum = styled.div`
     cursor: pointer;
   }
 
-  .album-item img {
+  .album-item-img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+
+  .has-multiple-items {
+    position: absolute;
+    transform: translate(-25px, 5px);
   }
 `;
