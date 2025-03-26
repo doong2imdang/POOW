@@ -87,10 +87,14 @@ export default function MyMood() {
                 });
 
                 return (
-                  <li key={index}>
+                  <li
+                    key={index}
+                    onClick={() => navigate("/mood", { state: mood })}
+                  >
                     <button
                       type="button"
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.stopPropagation();
                         toggleBottomSheet(mood);
                       }}
                     >
@@ -183,7 +187,11 @@ export default function MyMood() {
         ) : (
           <MoodAlbum>
             {filteredMoods.map((mood, index) => (
-              <div key={index} className="album-item">
+              <div
+                key={index}
+                className="album-item"
+                onClick={() => navigate("/mood", { state: mood })}
+              >
                 <img
                   src={mood.fileURLs[0]}
                   className="album-item-img"
