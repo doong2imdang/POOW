@@ -232,6 +232,7 @@ export const MoodList = styled.ul`
     padding-top: 18px;
     display: flex;
     flex-direction: column;
+    cursor: pointer;
 
     > button {
       margin-left: auto;
@@ -276,6 +277,7 @@ const MoodAlbum = styled.div`
     width: 100%;
     height: 100px;
     overflow: hidden;
+    cursor: pointer;
   }
 
   .album-item img {
