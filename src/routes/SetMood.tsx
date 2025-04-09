@@ -33,7 +33,7 @@ export default function SetMood() {
   const location = useLocation();
   const selectedMood = location.state?.mood;
 
-  console.log(selectedMood, "selectedMood");
+  // console.log(selectedMood, "selectedMood");
 
   useEffect(() => {
     if (userId && selectedMood) {
@@ -180,6 +180,7 @@ export default function SetMood() {
       );
 
       let updatedFileURLs = [...fileURLs];
+      let newDocRef;
 
       // 새로 업로드한 파일 처리
       for (const file of uploadedFiles) {
@@ -224,11 +225,11 @@ export default function SetMood() {
           category,
         };
 
-        const newDocRef = await addDoc(newDocumentsCollectionRef, data);
+        newDocRef = await addDoc(newDocumentsCollectionRef, data);
         console.log("새 게시글 저장 완료:", newDocRef.id);
       }
 
-      navigate("/mood");
+      navigate("/");
     } catch (e) {
       console.error("저장 중 오류 발생", e);
     }
