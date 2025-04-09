@@ -15,6 +15,7 @@ interface HeaderProps {
   search?: boolean;
   text?: boolean;
   set?: boolean;
+  back?: boolean;
   buttonDisabled?: boolean;
   hasInput?: boolean;
   bottomSheetText?: string;
@@ -30,6 +31,7 @@ const Header: React.FC<HeaderProps> = ({
   search,
   text,
   set,
+  back,
   buttonDisabled,
   hasInput,
   bottomSheetText,
@@ -120,6 +122,19 @@ const Header: React.FC<HeaderProps> = ({
               disabled={buttonDisabled}
               onClick={onSave}
             />
+          </>
+        )}
+
+        {back && (
+          <>
+            <button
+              type="button"
+              onClick={() => {
+                navigate(-1);
+              }}
+            >
+              <img src={iconArrowLeft} alt="Back" />
+            </button>
           </>
         )}
       </HeaderStyle>

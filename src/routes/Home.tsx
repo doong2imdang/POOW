@@ -304,7 +304,7 @@ export default function Home() {
   );
 }
 
-const MainStyle = styled.main`
+export const MainStyle = styled.main`
   height: calc(100% - 60px);
   overflow-x: hidden;
 
