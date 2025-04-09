@@ -218,7 +218,6 @@ export const MyMoodStyle = styled.div`
   display: flex;
   flex-direction: column;
   position: relative;
-  height: 100%;
 `;
 
 const PostDisplayToggle = styled.div`
