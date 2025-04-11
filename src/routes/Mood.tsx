@@ -6,6 +6,7 @@ import iconSMoreVertical from "../assets/images/s-icon-more-vertical.svg";
 import iconLeftSlide from "../assets/images/icon-left-slide.svg";
 import iconRightSlide from "../assets/images/icon-right-slide.svg";
 import { BtnDotStyle, ImageSliderStyle, type Mood } from "./Home";
+import BottomSheet from "../components/BottomSheet";
 
 export default function Mood() {
   const location = useLocation();
@@ -35,6 +36,13 @@ export default function Mood() {
 
   return (
     <>
+      {isBottomSheet && (
+        <BottomSheet
+          text="삭제, 수정"
+          toggleBottomSheet={toggleBottomSheet || (() => {})}
+          selectedMood={mood}
+        />
+      )}
       <Header back />
       <MoodList>
         <button
