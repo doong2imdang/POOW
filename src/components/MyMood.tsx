@@ -185,28 +185,30 @@ export default function MyMood() {
             )}
           </MoodList>
         ) : (
-          <MoodAlbum>
-            {filteredMoods.map((mood, index) => (
-              <div
-                key={index}
-                className="album-item"
-                onClick={() => navigate("/mood", { state: mood })}
-              >
-                <img
-                  src={mood.fileURLs[0]}
-                  className="album-item-img"
-                  alt="앨범형 mood 이미지"
-                />
-                {mood.fileURLs.length > 1 && (
+          <MoodAlbumContainer>
+            <MoodAlbum>
+              {filteredMoods.map((mood, index) => (
+                <div
+                  key={index}
+                  className="album-item"
+                  onClick={() => navigate("/mood", { state: mood })}
+                >
                   <img
-                    src={iconImgLayers}
-                    className="has-multiple-items"
-                    alt="해당mood에 파일이 2개이상일 경우"
+                    src={mood.fileURLs[0]}
+                    className="album-item-img"
+                    alt="앨범형 mood 이미지"
                   />
-                )}
-              </div>
-            ))}
-          </MoodAlbum>
+                  {mood.fileURLs.length > 1 && (
+                    <img
+                      src={iconImgLayers}
+                      className="has-multiple-items"
+                      alt="해당mood에 파일이 2개이상일 경우"
+                    />
+                  )}
+                </div>
+              ))}
+            </MoodAlbum>
+          </MoodAlbumContainer>
         )}
       </MyMoodStyle>
     </>
@@ -286,6 +288,10 @@ export const MoodList = styled.ul`
   }
 `;
 
+const MoodAlbumContainer = styled.div`
+  min-height: 390px;
+`;
+
 const MoodAlbum = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -295,7 +301,6 @@ const MoodAlbum = styled.div`
 
   .album-item {
     width: 100%;
-    height: 100px;
     overflow: hidden;
     cursor: pointer;
   }

@@ -6,6 +6,8 @@ import iconSMoreVertical from "../assets/images/s-icon-more-vertical.svg";
 import iconLeftSlide from "../assets/images/icon-left-slide.svg";
 import iconRightSlide from "../assets/images/icon-right-slide.svg";
 import { BtnDotStyle, ImageSliderStyle, type Mood } from "./Home";
+import BottomSheet from "../components/BottomSheet";
+import { Timestamp } from "firebase/firestore";
 
 export default function Mood() {
   const location = useLocation();
@@ -18,6 +20,8 @@ export default function Mood() {
     setIsBottomSheet((prev) => !prev);
   };
 
+  console.log(mood);
+
   if (!mood) {
     return <p>데이터가 없습니다.</p>;
   }
@@ -26,7 +30,14 @@ export default function Mood() {
     setCurrentImageIndex(newIndex);
   };
 
-  const date = mood.createdAt.toDate();
+  const date =
+    mood.createdAt && "seconds" in mood.createdAt
+      ? new Timestamp(
+          mood.createdAt.seconds,
+          mood.createdAt.nanoseconds
+        ).toDate()
+      : new Date();
+
   const formattedDate = date.toLocaleDateString("ko-KR", {
     year: "numeric",
     month: "long",
@@ -35,6 +46,13 @@ export default function Mood() {
 
   return (
     <>
+      {isBottomSheet && (
+        <BottomSheet
+          text="삭제, 수정"
+          toggleBottomSheet={toggleBottomSheet || (() => {})}
+          selectedMood={mood}
+        />
+      )}
       <Header back />
       <MoodList>
         <button
