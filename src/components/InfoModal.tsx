@@ -1,5 +1,7 @@
 import React from "react";
 import styled from "styled-components";
+import iconTemp from "../assets/images/icon-temp.svg";
+import iconPrecipitation from "../assets/images/icon-precipitation.svg";
 
 interface Props {
   isSelected?: boolean;
@@ -14,10 +16,36 @@ export default function InfoModal({ isSelected, isModalType, onClose }: Props) {
     <>
       <InfoModalBg onClick={onClose}></InfoModalBg>
       <InfoModalContainer>
-        <Title>
-          고양<span> 날씨</span>
-        </Title>
-        <Contents></Contents>
+        {isModalType == "weather" && (
+          <>
+            <Title>
+              고양<span> 날씨</span>
+            </Title>
+            <Contents>
+              <WeatherIcon>
+                <img src="" alt="날씨 아이콘" />
+                <p>살짝흐림</p>
+              </WeatherIcon>
+              <TempAverage>
+                <img src={iconTemp} alt="온도계 이미지" />
+                <span>
+                  28.6<span>℃</span>
+                </span>
+              </TempAverage>
+              <TempRange>
+                <p>
+                  최저<span>26.5</span>℃최고<span>30</span>℃
+                </p>
+              </TempRange>
+              <RainProb>
+                <img src={iconPrecipitation} alt="강수 이미지" />
+                <span>
+                  50<span>%</span>
+                </span>
+              </RainProb>
+            </Contents>
+          </>
+        )}
       </InfoModalContainer>
     </>
   );
@@ -61,4 +89,57 @@ const Contents = styled.div`
   min-height: 171px;
   border-radius: 10px;
   margin-top: 13px;
+  padding: 34px 12px;
+
+  display: grid;
+  grid-template-areas:
+    " icon temp "
+    " icon range "
+    " icon rain  ";
+`;
+
+const WeatherIcon = styled.div`
+  grid-area: icon;
+  width: 100px;
+  height: 100px;
+  position: relative;
+  justify-self: center;
+
+  p {
+    font-size: 10px;
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+`;
+
+const TempAverage = styled.div`
+  grid-area: temp;
+  font-size: 16px;
+  font-weight: bold;
+  position: relative;
+  align-self: center;
+
+  > span {
+    padding-left: 6px;
+    position: absolute;
+    bottom: 50%;
+    transform: translateY(50%);
+  }
+`;
+
+const TempRange = styled.div`
+  grid-area: range;
+  font-size: 10px;
+`;
+
+const RainProb = styled.div`
+  grid-area: rain;
+  font-size: 16px;
+  align-self: center;
+
+  img {
+    padding-right: 5px;
+  }
 `;
