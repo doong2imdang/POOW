@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import iconTemp from "../assets/images/icon-temp.svg";
 import iconPrecipitation from "../assets/images/icon-precipitation.svg";
+import iconCheckListFill from "../assets/images/icon-checkbox-fill.svg";
+import iconCheck from "../assets/images/icon-checkbox.svg";
 
 interface Props {
   isSelected?: boolean;
@@ -9,14 +11,68 @@ interface Props {
   onClose: () => void;
 }
 
+interface Item {
+  id: number;
+  label: string;
+  isChecked: boolean;
+}
+
+const initialItems: Item[] = [
+  { id: 1, label: "슬로건", isChecked: false },
+  { id: 2, label: "응원봉", isChecked: false },
+  { id: 3, label: "민증", isChecked: false },
+];
+
 export default function InfoModal({ isSelected, isModalType, onClose }: Props) {
+  const [items, setItems] = useState<Item[]>(initialItems);
+
   if (!isSelected) return null;
+
+  const handleCheck = (id: number) => {
+    setItems((prevItems) =>
+      prevItems.map((item) =>
+        item.id === id ? { ...item, isChecked: !item.isChecked } : item
+      )
+    );
+  };
 
   return (
     <>
       <InfoModalBg onClick={onClose}></InfoModalBg>
       <InfoModalContainer>
-        {isModalType == "weather" && (
+        {isModalType === "fortune" && (
+          <>
+            <FortuneContents></FortuneContents>
+          </>
+        )}
+        {isModalType === "checklist" && (
+          <>
+            <CheckTitle>
+              <p>2024. 10. 13 (일)</p>
+              <strong>어울림 누리 개관 20주년 기념 스페셜 콘서트 VOL.2</strong>
+            </CheckTitle>
+            <CheckContents>
+              <ul>
+                {items.map(({ id, label, isChecked }) => (
+                  <li key={id} onClick={() => handleCheck(id)}>
+                    <img
+                      src={isChecked ? iconCheckListFill : iconCheck}
+                      alt="체크박스 아이콘"
+                    />
+                    <input
+                      type="checkbox"
+                      id={`list-${id}`}
+                      checked={isChecked}
+                      readOnly
+                    />
+                    <label htmlFor={`list-${id}`}>{label}</label>
+                  </li>
+                ))}
+              </ul>
+            </CheckContents>
+          </>
+        )}
+        {isModalType === "weather" && (
           <>
             <Title>
               고양<span> 날씨</span>
@@ -72,6 +128,56 @@ const InfoModalContainer = styled.div`
   left: 50%;
   transform: translate(-50%, -50%);
   border-radius: 10px;
+`;
+
+const FortuneContents = styled.div``;
+
+const CheckTitle = styled.div`
+  strong {
+    display: block;
+    font-size: 18px;
+    font-weight: bold;
+    padding-top: 4px;
+    color: var(--color-dark);
+  }
+
+  p {
+    font-size: 12px;
+    color: var(--color-disabled);
+  }
+`;
+
+const CheckContents = styled.div`
+  color: var(--color-dark);
+  background: #fff;
+  min-height: 150px;
+  border: 1px solid var(--color-disabled);
+  border-radius: 10px;
+  margin-top: 9px;
+
+  & > ul {
+    padding: 12px;
+
+    > li {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px;
+
+      input[type="checkbox"] {
+        display: none;
+      }
+
+      label {
+        font-size: 16px;
+      }
+
+      img {
+        width: 15px;
+        height: 16px;
+      }
+    }
+  }
 `;
 
 const Title = styled.div`
