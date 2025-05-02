@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import iconTemp from "../assets/images/icon-temp.svg";
 import iconPrecipitation from "../assets/images/icon-precipitation.svg";
 import iconCheckListFill from "../assets/images/icon-checkbox-fill.svg";
 import iconCheck from "../assets/images/icon-checkbox.svg";
+import fortuneBg from "../assets/images/bg-horoscope.svg";
+import fortuneCard from "../assets/images/card-horoscope.svg";
 
 interface Props {
   isSelected?: boolean;
@@ -25,8 +27,8 @@ const initialItems: Item[] = [
 
 export default function InfoModal({ isSelected, isModalType, onClose }: Props) {
   const [items, setItems] = useState<Item[]>(initialItems);
-
-  if (!isSelected) return null;
+  const fortuneCards = Array(8).fill(fortuneCard);
+  const [currAngle, setCurrAngle] = useState(0);
 
   const handleCheck = (id: number) => {
     setItems((prevItems) =>
@@ -36,17 +38,48 @@ export default function InfoModal({ isSelected, isModalType, onClose }: Props) {
     );
   };
 
+  useEffect(() => {
+    if (isModalType !== "fortune") return;
+
+    const interval = setInterval(() => {
+      setCurrAngle((prev) => prev + 360 / fortuneCards.length);
+    }, 2500);
+
+    return () => clearInterval(interval);
+  }, [isModalType, fortuneCards.length]);
+
+  if (!isSelected) return null;
+
   return (
     <>
       <InfoModalBg onClick={onClose}></InfoModalBg>
       <InfoModalContainer>
         {isModalType === "fortune" && (
-          <>
-            <FortuneContents></FortuneContents>
-          </>
+          <FortuneContainer>
+            <FortuneLists
+              style={{
+                transform: `translate(-50%, -50%) rotateY(${currAngle}deg)`,
+              }}
+            >
+              {fortuneCards.map((card, index) => {
+                const rotate = (360 / fortuneCards.length) * index;
+                const radius = 140;
+                return (
+                  <FortuneContent
+                    key={index}
+                    style={{
+                      transform: `rotateY(${rotate}deg) translateZ(${radius}px)`,
+                    }}
+                  >
+                    <img src={card} alt="운세카드" />
+                  </FortuneContent>
+                );
+              })}
+            </FortuneLists>
+          </FortuneContainer>
         )}
         {isModalType === "checklist" && (
-          <>
+          <Container>
             <CheckTitle>
               <p>2024. 10. 13 (일)</p>
               <strong>어울림 누리 개관 20주년 기념 스페셜 콘서트 VOL.2</strong>
@@ -70,10 +103,10 @@ export default function InfoModal({ isSelected, isModalType, onClose }: Props) {
                 ))}
               </ul>
             </CheckContents>
-          </>
+          </Container>
         )}
         {isModalType === "weather" && (
-          <>
+          <Container>
             <Title>
               고양<span> 날씨</span>
             </Title>
@@ -100,7 +133,7 @@ export default function InfoModal({ isSelected, isModalType, onClose }: Props) {
                 </span>
               </RainProb>
             </Contents>
-          </>
+          </Container>
         )}
       </InfoModalContainer>
     </>
@@ -123,14 +156,45 @@ const InfoModalContainer = styled.div`
   z-index: 10;
   width: 329px;
   background: #fff;
-  padding: 12px 11px;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   border-radius: 10px;
 `;
 
-const FortuneContents = styled.div``;
+const FortuneContainer = styled.div`
+  width: 100%;
+  height: 400px;
+  background: no-repeat center/cover url(${fortuneBg});
+  border-radius: 10px;
+  perspective: 1600px;
+  overflow: hidden;
+`;
+
+const FortuneLists = styled.ul`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform-style: preserve-3d;
+  transition: transform 1s ease-in-out;
+`;
+
+const FortuneContent = styled.li`
+  position: absolute;
+  transform-style: preserve-3d;
+
+  img {
+    width: 105px;
+    transform: translate(-50%, -40%);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+  }
+`;
+
+const Container = styled.div`
+  padding: 12px 11px;
+`;
 
 const CheckTitle = styled.div`
   strong {
