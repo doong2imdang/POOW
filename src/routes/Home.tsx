@@ -198,7 +198,10 @@ export default function Home() {
           <MoodList>
             {moods.length > 0 ? (
               filteredMoods.map((mood, index) => {
-                const date = mood.createdAt.toDate();
+                const date =
+                  typeof mood.createdAt?.toDate === "function"
+                    ? mood.createdAt.toDate()
+                    : new Date(mood.createdAt);
                 const formattedDate = date.toLocaleDateString("ko-KR", {
                   year: "numeric",
                   month: "long",
