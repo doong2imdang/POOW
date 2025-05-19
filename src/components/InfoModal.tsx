@@ -29,6 +29,31 @@ export default function InfoModal({ isSelected, isModalType, onClose }: Props) {
   const [items, setItems] = useState<Item[]>(initialItems);
   const fortuneCards = Array(8).fill(fortuneCard);
   const [currAngle, setCurrAngle] = useState(0);
+  const [weatherData, setWeatherData] = useState<any>(null);
+
+  useEffect(() => {
+    if (isModalType !== "weather") return;
+
+    const fetchWeather = async () => {
+      const lat = 37.6584;
+      const lon = 126.832;
+      const apiKey = process.env.REACT_APP_WEATHER_API_KEY;
+
+      try {
+        const response = await fetch(
+          `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric&lang=kr`
+        );
+        const data = await response.json();
+        setWeatherData(data);
+      } catch (error) {
+        console.error("날씨 데이터를 가져오는데 실패했습니다", error);
+      }
+    };
+
+    fetchWeather();
+  }, [isModalType]);
+
+  console.log(weatherData);
 
   const handleCheck = (id: number) => {
     setItems((prevItems) =>
