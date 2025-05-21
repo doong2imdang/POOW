@@ -75,15 +75,19 @@ export default function Home() {
               "documents"
             );
             const documentsSnapshot = await getDocs(documentsCollectionRef);
-            const moodsData = documentsSnapshot.docs.map((doc) => ({
-              id: doc.id,
-              ...doc.data(),
-              category: categoryId,
-              currentImageIndex: 0,
-            }));
+            const moodsData = documentsSnapshot.docs.map((doc) => {
+              const data = doc.data();
+              return {
+                id: doc.id,
+                ...data,
+                createdAt: data.createdAt?.toDate().toISOString(),
+                category: categoryId,
+                currentImageIndex: 0,
+              };
+            });
             allMoods = [...allMoods, ...moodsData];
           }
-          allMoods.sort((a, b) => b.createdAt.toDate() - a.createdAt.toDate());
+          allMoods.sort((a, b) => b.createdAt - a.createdAt);
           dispatch(setMoods(allMoods));
         }
       } catch (e) {
