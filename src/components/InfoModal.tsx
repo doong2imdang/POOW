@@ -39,6 +39,50 @@ export default function InfoModal({
 
   console.log(schedule.fcltynm, "clickedSchedule infomodal");
 
+  // 위도,경도 변환 api
+  const getCoordinates = async (address: string) => {
+    const REST_API_KEY = process.env.REACT_APP_KAKAO_REST_API_KEY;
+    const url = `https://dapi.kakao.com/v2/local/search/keyword.json?query=${encodeURIComponent(
+      address
+    )}`;
+
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Authorization: `KakaoAK ${REST_API_KEY}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error("주소 요청 실패");
+      }
+
+      const data = await response.json();
+      if (data.documents.length === 0) {
+        console.warn("해당 주소의 결과가 없습니다.");
+        return null;
+      }
+
+      const { x, y } = data.documents[0];
+      return { latitude: y, longitude: x };
+    } catch (error) {
+      console.error("좌표 조회 실패:", error);
+      return null;
+    }
+  };
+
+  useEffect(() => {
+    const fetchCoords = async () => {
+      if (!schedule?.fcltynm) return;
+
+      const cleanedAddress = schedule.fcltynm.split(" (")[0];
+      const result = await getCoordinates(cleanedAddress);
+
+      console.log("좌표결과", result);
+    };
+    fetchCoords();
+  }, [schedule]);
+
   // 날씨 정보 api
   useEffect(() => {
     if (isModalType !== "weather") return;
