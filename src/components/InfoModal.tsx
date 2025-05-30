@@ -10,6 +10,7 @@ import fortuneCard from "../assets/images/card-horoscope.svg";
 interface Props {
   isSelected?: boolean;
   isModalType?: string;
+  schedule: any;
   onClose: () => void;
 }
 
@@ -25,12 +26,20 @@ const initialItems: Item[] = [
   { id: 3, label: "민증", isChecked: false },
 ];
 
-export default function InfoModal({ isSelected, isModalType, onClose }: Props) {
+export default function InfoModal({
+  isSelected,
+  isModalType,
+  schedule,
+  onClose,
+}: Props) {
   const [items, setItems] = useState<Item[]>(initialItems);
   const fortuneCards = Array(8).fill(fortuneCard);
   const [currAngle, setCurrAngle] = useState(0);
   const [weatherData, setWeatherData] = useState<any>(null);
 
+  console.log(schedule.fcltynm, "clickedSchedule infomodal");
+
+  // 날씨 정보 api
   useEffect(() => {
     if (isModalType !== "weather") return;
 
