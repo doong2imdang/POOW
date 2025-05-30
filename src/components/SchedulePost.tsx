@@ -30,6 +30,7 @@ const SchedulePost: React.FC = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [isSelected, setIsSelected] = useState(false);
   const [isModalType, setIsModalType] = useState("");
+  const [clickedSchedule, setClickedSchedule] = useState<any | null>(null);
   const userId = useSelector((state: RootState) => state.auth.uid);
   const navigate = useNavigate();
 
@@ -126,6 +127,7 @@ const SchedulePost: React.FC = () => {
         <InfoModal
           isSelected={isSelected}
           isModalType={isModalType}
+          schedule={clickedSchedule}
           onClose={() => setIsSelected(false)}
         />
       )}
@@ -163,7 +165,12 @@ const SchedulePost: React.FC = () => {
                   <p>{schedule.prfcast}</p>
                 </ScheduleDetail>
               </ScheduleInfo>
-              <ContentsWrap onClick={() => setIsSelected((prev) => !prev)}>
+              <ContentsWrap
+                onClick={() => {
+                  setIsSelected((prev) => !prev);
+                  setClickedSchedule(schedule);
+                }}
+              >
                 <BtnContents onClick={() => setIsModalType("fortune")}>
                   <img src={iconCrystalBall} alt="CrystalBall" />
                 </BtnContents>
